@@ -30,6 +30,20 @@
     }
   }
 
+  function getSessionLabel(user) {
+    if (user) {
+      var profile = user.profile || {};
+      var label = (user.displayName || profile.fullName || user.email || "").trim();
+      if (label) {
+        return label;
+      }
+      if (user.email) {
+        return user.email;
+      }
+    }
+    return "Đã đăng nhập";
+  }
+
   function setSession(token, user) {
     try {
       if (token) {
@@ -85,27 +99,48 @@
   }
 
   function updateAuthBars() {
+    var token = getToken();
     var user = getUser();
-    var bars = document.querySelectorAll("[data-auth-bar]");
+    var loggedIn = !!token;
+    var label = loggedIn ? getSessionLabel(user) : "";
+    var emailTitle = user && user.email ? user.email : "";
 
-    bars.forEach(function (bar) {
-      if (!user || !getToken()) {
-        bar.innerHTML =
-          '<a href="login.html" class="text-white text-decoration-underline">Đăng nhập</a>' +
-          '<span class="text-white-50 mx-1">·</span>' +
-          '<a href="register.html" class="text-white text-decoration-underline">Đăng ký</a>';
+    var slots = document.querySelectorAll("[data-auth-bar], [data-auth-navbar]");
+
+    slots.forEach(function (el) {
+      var isNav = el.hasAttribute("data-auth-navbar");
+
+      if (!loggedIn) {
+        if (isNav) {
+          el.innerHTML =
+            '<a class="nav-link" href="login.html">Đăng nhập</a>' +
+            '<a class="nav-link" href="register.html">Đăng ký</a>';
+        } else {
+          el.innerHTML =
+            '<a href="login.html" class="text-white text-decoration-underline">Đăng nhập</a>' +
+            '<span class="text-white-50 mx-1">·</span>' +
+            '<a href="register.html" class="text-white text-decoration-underline">Đăng ký</a>';
+        }
         return;
       }
 
-      var profile = user.profile || {};
-      var label = (user.displayName || profile.fullName || user.email || "").trim() || user.email;
-      bar.innerHTML =
-        '<span class="me-2 text-truncate d-inline-block text-white" style="max-width:12rem" title="' +
-        (user.email || "") +
-        '">' +
-        label +
-        "</span>" +
-        '<button type="button" class="btn btn-link btn-sm text-white p-0 text-decoration-underline" data-auth-logout>Đăng xuất</button>';
+      if (isNav) {
+        el.innerHTML =
+          '<span class="nav-link small py-1 mb-0 text-truncate d-inline-block" style="max-width:10rem" title="' +
+          emailTitle +
+          '">' +
+          label +
+          '</span>' +
+          '<button type="button" class="btn btn-outline-dark btn-sm ms-1" data-auth-logout>Đăng xuất</button>';
+      } else {
+        el.innerHTML =
+          '<span class="me-2 text-truncate d-inline-block text-white" style="max-width:12rem" title="' +
+          emailTitle +
+          '">' +
+          label +
+          "</span>" +
+          '<button type="button" class="btn btn-link btn-sm text-white p-0 text-decoration-underline" data-auth-logout>Đăng xuất</button>';
+      }
     });
 
     document.querySelectorAll("[data-auth-logout]").forEach(function (btn) {
