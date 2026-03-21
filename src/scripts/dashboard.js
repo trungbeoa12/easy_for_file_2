@@ -579,6 +579,9 @@
     var loadingEl = document.querySelector("[data-dashboard-loading]");
     var emptyEl = document.querySelector("[data-dashboard-empty]");
     var mainEl = document.querySelector("[data-dashboard-main]");
+    var emptyCopyEl = document.querySelector("[data-dashboard-empty-copy]");
+    var emptyPrimaryAction = document.querySelector("[data-dashboard-empty-primary]");
+    var emptySecondaryAction = document.querySelector("[data-dashboard-empty-secondary]");
 
     var elements = {
       summaryElement: document.querySelector("[data-dashboard-summary]"),
@@ -616,7 +619,25 @@
       setPanelsVisible(loadingEl, emptyEl, mainEl, "content");
     }
 
-    function showEmpty() {
+    function showEmpty(mode) {
+      if (emptyCopyEl) {
+        if (mode === "account-empty") {
+          emptyCopyEl.textContent = "Tai khoan nay chua co assessment nao. Hay hoan thanh assessment dau tien de dashboard bat dau luu lich su, diem so va tien trinh cho ban.";
+        } else if (mode === "guest-empty") {
+          emptyCopyEl.innerHTML = 'Dashboard can mot ban assessment. Hay hoan thanh form dang ky MVP de xem BMI, TDEE va goi y ca nhan, hoac dang nhap de mo dashboard theo tai khoan.';
+        } else {
+          emptyCopyEl.innerHTML = 'Dashboard can mot ban assessment. Hay hoan thanh form dang ky MVP de xem BMI, TDEE va goi y ca nhan — hoac mo link co ma <code>id</code> hop le tu email/thong bao sau khi gui form.';
+        }
+      }
+
+      if (emptyPrimaryAction) {
+        emptyPrimaryAction.textContent = mode === "account-empty" ? "Lam assessment dau tien" : "Quay lai lam assessment";
+      }
+
+      if (emptySecondaryAction) {
+        emptySecondaryAction.hidden = mode === "account-empty";
+      }
+
       setPanelsVisible(loadingEl, emptyEl, mainEl, "empty");
     }
 
@@ -678,7 +699,7 @@
             showContent(record, "account");
             return;
           }
-          showEmpty();
+          showEmpty("account-empty");
         })
         .catch(function (err) {
           var status = err && err.status;
@@ -687,11 +708,15 @@
               auth.clearSession();
             }
           }
+          if (status === 404) {
+            showEmpty("account-empty");
+            return;
+          }
           var fallback = getStoredAssessment();
           if (fallback) {
             showContent(fallback, "fallback");
           } else {
-            showEmpty();
+            showEmpty("guest-empty");
           }
         });
 
@@ -700,7 +725,7 @@
 
     var record = getStoredAssessment();
     if (!record) {
-      showEmpty();
+      showEmpty("guest-empty");
       return;
     }
 

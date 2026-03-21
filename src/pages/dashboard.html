@@ -105,10 +105,13 @@
 
         <div class="container section-padding text-center" data-dashboard-empty hidden>
             <h2 class="h4 mb-3">Chưa có dữ liệu để hiển thị</h2>
-            <p class="text-muted mb-4">
+            <p class="text-muted mb-4" data-dashboard-empty-copy>
                 Dashboard cần một bản assessment. Hãy hoàn thành form đăng ký MVP để xem BMI, TDEE và gợi ý cá nhân — hoặc mở link có mã <code>id</code> hợp lệ từ email/thông báo sau khi gửi form.
             </p>
-            <a href="mvp-registration.html" class="custom-btn btn">Quay lại làm assessment</a>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="mvp-registration.html" class="custom-btn btn" data-dashboard-empty-primary>Quay lại làm assessment</a>
+                <a href="login.html?next=dashboard.html" class="custom-btn custom-border-btn btn" data-dashboard-empty-secondary>Đăng nhập để mở dashboard account</a>
+            </div>
         </div>
 
         <main class="dashboard-page" data-dashboard-main>
