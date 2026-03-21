@@ -379,9 +379,10 @@
 
         fetch(buildApiUrl(apiRegistrationPath), {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: Object.assign(
+            { "Content-Type": "application/json" },
+            window.EFL_AUTH && window.EFL_AUTH.getAuthHeaders ? window.EFL_AUTH.getAuthHeaders() : {}
+          ),
           body: JSON.stringify(payload),
         })
           .then(function (response) {

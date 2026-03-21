@@ -57,14 +57,23 @@ Trên Vercel Dashboard: **Framework Preset = Other**; **Output Directory** = `sr
 ### API Node (MongoDB Atlas)
 
 1. Sao chép `.env.example` → `.env`, dán `MONGODB_URI` từ Atlas (chuỗi `mongodb+srv://...`).
-2. `npm install` (lần đầu), rồi `npm start` — **http://localhost:3000** mở thẳng site (redirect tới `/pages/index.html`). Kiểm tra API: **http://localhost:3000/api/health** (text xác nhận backend).
+2. Thêm **`JWT_SECRET`** (chuỗi ngẫu nhiên ≥ 16 ký tự) — bắt buộc cho đăng ký / đăng nhập.
+3. `npm install` (lần đầu), rồi `npm start` — **http://localhost:3000** mở thẳng site (redirect tới `/pages/index.html`). Kiểm tra API: **http://localhost:3000/api/health** (text xác nhận backend).
+
+**Auth API (Phase 4 MVP)**
+
+- `POST /api/auth/register` — `{ email, password, displayName?, fullName? }` → `{ data: { token, user } }`.
+- `POST /api/auth/login` — `{ email, password }` → `{ data: { token, user } }`.
+- `GET /api/auth/me` — header `Authorization: Bearer <token>` → profile user (không có mật khẩu).
+- `POST /api/auth/logout` — stateless; client xóa token trong `localStorage`.
 
 **MVP registration API**
 
-- `POST /api/mvp-registrations` — tạo bản ghi; response `data` có `id` (MongoDB ObjectId string).
-- `GET /api/mvp-registrations/:id` — lấy một bản ghi (cùng shape với `data` của POST).
+- `POST /api/mvp-registrations` — tạo bản ghi; có Bearer token thì gắn **`userId`** và đồng bộ **email theo tài khoản**; không token vẫn gửi khách (chỉ `email` trên form).
+- `GET /api/mvp-registrations/me` — **cần đăng nhập** — trả assessment **mới nhất** của user + `history` / `progress` (cùng shape gần với GET theo `id`).
+- `GET /api/mvp-registrations/:id` — lấy một bản ghi theo id (public link như trước).
 
-**Dashboard:** `http://localhost:3000/pages/dashboard.html?id=<id>` (ưu tiên API; không có `id` thì đọc `localStorage` `eflLatestAssessment`). Trên `localhost:3000`, `app-config.js` dùng API cùng origin; deploy tĩnh (Vercel) cần `API_BASE_URL` trỏ tới host API (ví dụ Railway).
+**Dashboard:** `dashboard.html?id=...` → API theo id; **đã đăng nhập và không có `id`** → `GET /api/mvp-registrations/me`; không thì `localStorage` `eflLatestAssessment`. Trang **`login.html`**, **`register.html`**. Trên `localhost:3000`, `app-config.js` dùng API cùng origin; deploy tĩnh (Vercel) cần `API_BASE_URL` + `CORS_ORIGIN` trên Railway gồm domain Vercel.
 
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
 

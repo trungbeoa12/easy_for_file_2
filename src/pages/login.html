@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Easy-for-Life — Đăng nhập</title>
+        <link href="../styles/vendor/bootstrap.min.css" rel="stylesheet">
+        <link href="../styles/vendor/bootstrap-icons.css" rel="stylesheet">
+        <link href="../styles/site-theme.css" rel="stylesheet">
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-12 d-flex flex-wrap align-items-center">
+                        <p class="d-flex me-4 mb-0">
+                            <i class="bi-person-circle me-2"></i>
+                            Đăng nhập để gắn assessment với tài khoản
+                        </p>
+                        <p class="d-flex mb-0 w-100 align-items-center flex-wrap gap-2 mt-2 small" data-auth-bar></p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="navbar navbar-expand-lg bg-light shadow-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="../assets/images/logo-main.png" class="logo img-fluid" alt="Easy-for-Life">
+                    <span>Easy-for-Life<small>QUALITY OF LIFE PLATFORM</small></span>
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="register.html">Đăng ký</a>
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="section-padding">
+            <div class="container" style="max-width: 480px;">
+                <h1 class="h3 mb-4">Đăng nhập</h1>
+                <form class="custom-form" data-login-form>
+                    <div class="mb-3">
+                        <label class="form-label" for="login-email">Email</label>
+                        <input type="email" class="form-control" id="login-email" name="email" required autocomplete="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="login-password">Mật khẩu</label>
+                        <input type="password" class="form-control" id="login-password" name="password" required autocomplete="current-password" minlength="8">
+                    </div>
+                    <button type="submit" class="form-control">Đăng nhập</button>
+                    <p class="small mt-3 mb-0" data-auth-feedback></p>
+                    <p class="small text-muted mt-3 mb-0">Chưa có tài khoản? <a href="register.html">Đăng ký</a></p>
+                </form>
+            </div>
+        </main>
+
+        <script src="../scripts/app-config.js"></script>
+        <script src="../scripts/auth-client.js"></script>
+        <script src="../scripts/auth-pages.js"></script>
+    </body>
+</html>

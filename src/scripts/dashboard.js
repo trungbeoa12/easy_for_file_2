@@ -29,6 +29,14 @@
     }
   }
 
+  function saveLatestAssessment(record) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
   function formatUpdatedAt(value) {
     if (!value) {
       return "Cap nhat gan nhat";
@@ -252,6 +260,9 @@
     if (viewState === "api") {
       sourceLabel = "Tu API";
       message = "Ban dang xem ban ghi tu production backend. Link nay co the chia se lai de mo dung assessment nay.";
+    } else if (viewState === "account") {
+      sourceLabel = "Tai khoan";
+      message = "Du lieu theo tai khoan da dang nhap — ban assessment gan nhat cua ban tren server.";
     } else if (viewState === "fallback") {
       sourceLabel = "Local fallback";
       message = "Khong tai duoc ban ghi theo id, nen dashboard tam hien du lieu gan nhat da luu tren trinh duyet nay.";
@@ -625,6 +636,49 @@
           } else {
             showEmpty();
           }
+        })
+        .catch(function () {
+          var fallback = getStoredAssessment();
+          if (fallback) {
+            showContent(fallback, "fallback");
+          } else {
+            showEmpty();
+          }
+        });
+
+      return;
+    }
+
+    var auth = window.EFL_AUTH;
+    var authToken = auth && auth.getToken ? auth.getToken() : "";
+
+    if (authToken) {
+      setPanelsVisible(loadingEl, emptyEl, mainEl, "loading");
+
+      fetch(buildApiUrl("/api/mvp-registrations/me"), {
+        method: "GET",
+        headers: Object.assign({ Accept: "application/json" }, auth.getAuthHeaders()),
+      })
+        .then(function (response) {
+          return response.json().catch(function () {
+            return null;
+          }).then(function (data) {
+            if (!response.ok) {
+              var err = new Error((data && data.message) || "Không tải được dashboard.");
+              err.status = response.status;
+              throw err;
+            }
+            return data;
+          });
+        })
+        .then(function (payload) {
+          var record = payload && payload.data ? payload.data : null;
+          if (record) {
+            saveLatestAssessment(record);
+            showContent(record, "account");
+            return;
+          }
+          showEmpty();
         })
         .catch(function () {
           var fallback = getStoredAssessment();

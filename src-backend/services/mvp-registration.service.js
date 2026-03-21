@@ -10,6 +10,29 @@ function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
+function guestEmailQuery(normalizedEmail) {
+  return {
+    email: normalizedEmail,
+    $or: [{ userId: null }, { userId: { $exists: false } }],
+  };
+}
+
+function toUserObjectId(userId) {
+  if (!userId) {
+    return null;
+  }
+
+  if (userId instanceof mongoose.Types.ObjectId) {
+    return userId;
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return null;
+  }
+
+  return new mongoose.Types.ObjectId(userId);
+}
+
 function roundNumber(value, decimals = 0) {
   if (typeof value !== 'number' || Number.isNaN(value)) {
     return null;
@@ -68,6 +91,7 @@ function mapRegistrationToResponse(registration) {
 
   return {
     id: registration._id.toString(),
+    userId: registration.userId ? registration.userId.toString() : null,
     fullName: registration.fullName,
     email: registration.email,
     profile: registration.profile,
@@ -228,8 +252,15 @@ function buildProgressData(registrations, currentRegistrationId) {
   };
 }
 
-async function buildRegistrationTracking(email, currentRegistrationId) {
-  if (!email) {
+async function buildRegistrationTracking({ email, userId, currentRegistrationId }) {
+  const userObjectId = toUserObjectId(userId);
+  let registrations;
+
+  if (userObjectId) {
+    registrations = await MvpRegistration.find({ userId: userObjectId }).sort({ createdAt: 1 });
+  } else if (email) {
+    registrations = await MvpRegistration.find(guestEmailQuery(normalizeEmail(email))).sort({ createdAt: 1 });
+  } else {
     return {
       history: [],
       historyMeta: {
@@ -241,9 +272,6 @@ async function buildRegistrationTracking(email, currentRegistrationId) {
       progress: buildProgressData([], currentRegistrationId),
     };
   }
-
-  const registrations = await MvpRegistration.find({ email: normalizeEmail(email) })
-    .sort({ createdAt: 1 });
 
   const currentRegistration = registrations.find(
     (registration) => String(registration._id) === String(currentRegistrationId)
@@ -282,28 +310,13 @@ async function buildRegistrationTracking(email, currentRegistrationId) {
   };
 }
 
-async function createRegistration(payload) {
-  if (mongoose.connection.readyState !== 1) {
-    const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
-    error.statusCode = 503;
-    throw error;
-  }
-
-  const assessment = buildAssessment(payload);
-  const normalizedEmail = normalizeEmail(payload.email);
-  const currentSequence = (await MvpRegistration.countDocuments({ email: normalizedEmail })) + 1;
-  const registration = await MvpRegistration.create({
-    ...payload,
-    email: normalizedEmail,
-    assessmentMeta: {
-      assessmentVersion: 'v1',
-      sequence: currentSequence,
-      submittedAt: new Date(),
-    },
-    assessment,
-  });
+async function assembleRegistrationResponse(registration) {
   const responseData = mapRegistrationToResponse(registration);
-  const tracking = await buildRegistrationTracking(registration.email, registration._id);
+  const tracking = await buildRegistrationTracking({
+    email: registration.email,
+    userId: registration.userId,
+    currentRegistrationId: registration._id,
+  });
 
   return {
     ...responseData,
@@ -315,6 +328,39 @@ async function createRegistration(payload) {
     historyMeta: tracking.historyMeta,
     progress: tracking.progress,
   };
+}
+
+async function createRegistration(payload, options = {}) {
+  if (mongoose.connection.readyState !== 1) {
+    const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const assessment = buildAssessment(payload);
+  const normalizedEmail = normalizeEmail(payload.email);
+  const userObjectId = toUserObjectId(options.userId);
+
+  let currentSequence;
+  if (userObjectId) {
+    currentSequence = (await MvpRegistration.countDocuments({ userId: userObjectId })) + 1;
+  } else {
+    currentSequence = (await MvpRegistration.countDocuments(guestEmailQuery(normalizedEmail))) + 1;
+  }
+
+  const registration = await MvpRegistration.create({
+    ...payload,
+    email: normalizedEmail,
+    userId: userObjectId,
+    assessmentMeta: {
+      assessmentVersion: 'v1',
+      sequence: currentSequence,
+      submittedAt: new Date(),
+    },
+    assessment,
+  });
+
+  return assembleRegistrationResponse(registration);
 }
 
 async function getRegistrationById(id) {
@@ -338,22 +384,31 @@ async function getRegistrationById(id) {
     throw error;
   }
 
-  const responseData = mapRegistrationToResponse(registration);
-  const tracking = await buildRegistrationTracking(registration.email, registration._id);
+  return assembleRegistrationResponse(registration);
+}
 
-  return {
-    ...responseData,
-    assessmentMeta: {
-      ...(responseData.assessmentMeta || {}),
-      sequence: tracking.historyMeta.currentSequence,
-    },
-    history: tracking.history,
-    historyMeta: tracking.historyMeta,
-    progress: tracking.progress,
-  };
+async function getLatestForAuthenticatedUser(userId) {
+  const userObjectId = toUserObjectId(userId);
+
+  if (!userObjectId) {
+    const error = new Error('Invalid user.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const registration = await MvpRegistration.findOne({ userId: userObjectId }).sort({ createdAt: -1 });
+
+  if (!registration) {
+    const error = new Error('No assessments found for this account.');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return assembleRegistrationResponse(registration);
 }
 
 module.exports = {
   createRegistration,
   getRegistrationById,
+  getLatestForAuthenticatedUser,
 };

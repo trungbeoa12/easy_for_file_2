@@ -8,6 +8,12 @@ const mvpRegistrationSchema = new mongoose.Schema(
       trim: true,
       maxlength: 120,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+      index: true,
+    },
     email: {
       type: String,
       required: true,
