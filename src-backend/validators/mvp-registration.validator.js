@@ -1,6 +1,8 @@
 const ALLOWED_GOALS = ['lose-weight', 'muscle', 'health', 'productivity', 'balance'];
 const ALLOWED_PRIORITIES = ['form', 'dashboard', 'daily-plan', 'ecosystem'];
 const ALLOWED_SOURCE_PAGES = ['landing', 'mvp-registration'];
+const ALLOWED_GENDERS = ['male', 'female', 'other', ''];
+const ALLOWED_ACTIVITY_LEVELS = ['sedentary', 'light', 'moderate', 'active', 'very-active', ''];
 
 function createValidationError(message, details) {
   const error = new Error(message);
@@ -35,6 +37,31 @@ function normalizeGoals(goals) {
   return [...new Set(cleanedGoals)];
 }
 
+function normalizeNumber(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  const parsedValue = Number(value);
+
+  return Number.isFinite(parsedValue) ? parsedValue : NaN;
+}
+
+function validateRange(field, value, min, max, errors) {
+  if (value === null) {
+    return;
+  }
+
+  if (Number.isNaN(value)) {
+    errors.push({ field, message: `${field} must be a valid number.` });
+    return;
+  }
+
+  if (value < min || value > max) {
+    errors.push({ field, message: `${field} must be between ${min} and ${max}.` });
+  }
+}
+
 function validateMvpRegistrationPayload(payload) {
   const errors = [];
 
@@ -44,6 +71,15 @@ function validateMvpRegistrationPayload(payload) {
   const note = String(payload.note || '').trim();
   const sourcePage = String(payload.sourcePage || 'mvp-registration').trim();
   const consent = payload.consent === true;
+  const profile = payload.profile || {};
+  const bodyMetrics = payload.bodyMetrics || {};
+  const habits = payload.habits || {};
+  const age = normalizeNumber(profile.age);
+  const gender = String(profile.gender || '').trim();
+  const heightCm = normalizeNumber(bodyMetrics.heightCm);
+  const weightKg = normalizeNumber(bodyMetrics.weightKg);
+  const sleepHours = normalizeNumber(habits.sleepHours);
+  const activityLevel = String(habits.activityLevel || '').trim();
 
   if (!fullName) {
     errors.push({ field: 'fullName', message: 'Full name is required.' });
@@ -65,9 +101,22 @@ function validateMvpRegistrationPayload(payload) {
     errors.push({ field: 'sourcePage', message: 'Source page is not supported.' });
   }
 
+  if (!ALLOWED_GENDERS.includes(gender)) {
+    errors.push({ field: 'profile.gender', message: 'Gender is not supported.' });
+  }
+
+  if (!ALLOWED_ACTIVITY_LEVELS.includes(activityLevel)) {
+    errors.push({ field: 'habits.activityLevel', message: 'Activity level is not supported.' });
+  }
+
   if (!consent) {
     errors.push({ field: 'consent', message: 'Consent must be accepted.' });
   }
+
+  validateRange('profile.age', age, 10, 100, errors);
+  validateRange('bodyMetrics.heightCm', heightCm, 100, 250, errors);
+  validateRange('bodyMetrics.weightKg', weightKg, 20, 300, errors);
+  validateRange('habits.sleepHours', sleepHours, 0, 24, errors);
 
   if (errors.length) {
     throw createValidationError('Invalid registration payload.', errors);
@@ -76,6 +125,18 @@ function validateMvpRegistrationPayload(payload) {
   return {
     fullName,
     email,
+    profile: {
+      age,
+      gender,
+    },
+    bodyMetrics: {
+      heightCm,
+      weightKg,
+    },
+    habits: {
+      sleepHours,
+      activityLevel,
+    },
     goals: normalizeGoals(payload.goals),
     priority,
     note,

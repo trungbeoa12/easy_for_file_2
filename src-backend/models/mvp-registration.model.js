@@ -15,6 +15,46 @@ const mvpRegistrationSchema = new mongoose.Schema(
       lowercase: true,
       maxlength: 160,
     },
+    profile: {
+      age: {
+        type: Number,
+        min: 10,
+        max: 100,
+        default: null,
+      },
+      gender: {
+        type: String,
+        enum: ['male', 'female', 'other', ''],
+        default: '',
+      },
+    },
+    bodyMetrics: {
+      heightCm: {
+        type: Number,
+        min: 100,
+        max: 250,
+        default: null,
+      },
+      weightKg: {
+        type: Number,
+        min: 20,
+        max: 300,
+        default: null,
+      },
+    },
+    habits: {
+      sleepHours: {
+        type: Number,
+        min: 0,
+        max: 24,
+        default: null,
+      },
+      activityLevel: {
+        type: String,
+        enum: ['sedentary', 'light', 'moderate', 'active', 'very-active', ''],
+        default: '',
+      },
+    },
     goals: {
       type: [String],
       default: [],
@@ -43,6 +83,20 @@ const mvpRegistrationSchema = new mongoose.Schema(
       type: String,
       enum: ['new', 'reviewed', 'contacted', 'rejected'],
       default: 'new',
+    },
+    assessment: {
+      bmi: {
+        value: { type: Number, default: null },
+        category: { type: String, default: '' },
+        reference: { type: String, default: '' },
+      },
+      tdee: {
+        bmr: { type: Number, default: null },
+        tdee: { type: Number, default: null },
+        activityMultiplier: { type: Number, default: null },
+        activityLevel: { type: String, default: '' },
+        formula: { type: String, default: '' },
+      },
     },
   },
   {
