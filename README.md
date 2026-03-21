@@ -44,6 +44,11 @@ cd src && python3 -m http.server 8080
 # http://localhost:8080/pages/index.html
 ```
 
+### API Node (MongoDB Atlas)
+
+1. Sao chép `.env.example` → `.env`, dán `MONGODB_URI` từ Atlas (chuỗi `mongodb+srv://...`).
+2. `npm install` (lần đầu), rồi `npm start` — server mặc định **http://localhost:3000** (`GET /` trả về text xác nhận).
+
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
 
 ## Import / đường dẫn (ví dụ)

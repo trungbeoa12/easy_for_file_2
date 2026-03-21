@@ -6,3 +6,7 @@ Thumbs.db
 
 # Local tooling
 anaconda_projects/
+
+# Node / secrets
+node_modules/
+.env
