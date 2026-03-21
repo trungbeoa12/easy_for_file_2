@@ -1,35 +1,13 @@
-require('dotenv').config();
+const { loadEnv } = require('./src-backend/config/env');
+const { connectToDatabase } = require('./src-backend/config/db');
+const { createApp } = require('./src-backend/app');
 
-const path = require('path');
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+loadEnv();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = createApp();
+const PORT = Number(process.env.PORT) || 3000;
 
-app.use(cors());
-app.use(express.json());
-
-// Static site (HTML/CSS/JS/assets under src/)
-app.use(express.static(path.join(__dirname, 'src')));
-
-app.get('/', (req, res) => {
-  res.redirect('/pages/index.html');
-});
-
-app.get('/api/health', (req, res) => {
-  res.type('text/plain').send('Easy for Life backend is running');
-});
-
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch((err) => {
-    console.error(err.message);
-  });
+connectToDatabase();
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
