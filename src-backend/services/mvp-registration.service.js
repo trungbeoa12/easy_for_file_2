@@ -6,6 +6,29 @@ const { buildLifeScore } = require('./life-score.service');
 const { calculateBmi } = require('../utils/health/bmi');
 const { calculateTdee } = require('../utils/health/tdee');
 
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function roundNumber(value, decimals = 0) {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return null;
+  }
+
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
+function getAssessmentMeta(registration, fallbackSequence) {
+  const assessmentMeta = registration.assessmentMeta || {};
+
+  return {
+    assessmentVersion: assessmentMeta.assessmentVersion || 'v1',
+    sequence: assessmentMeta.sequence || fallbackSequence || null,
+    submittedAt: assessmentMeta.submittedAt || registration.createdAt || null,
+  };
+}
+
 function buildAssessment(payload) {
   const bmi = calculateBmi(payload.bodyMetrics.weightKg, payload.bodyMetrics.heightCm);
   const tdee = calculateTdee({
@@ -56,6 +79,7 @@ function mapRegistrationToResponse(registration) {
     consent: registration.consent,
     sourcePage: registration.sourcePage,
     status: registration.status,
+    assessmentMeta: getAssessmentMeta(registration, null),
     lifeScore: assessment.lifeScore || 0,
     components: assessment.components || { body: 0, sleep: 0, activity: 0 },
     explanation: assessment.explanation || '',
@@ -65,14 +89,17 @@ function mapRegistrationToResponse(registration) {
   };
 }
 
-function buildHistoryItem(registration) {
+function buildHistoryItem(registration, fallbackSequence) {
   const assessment = registration.assessment || {};
   const bmi = assessment.bmi || {};
   const tdee = assessment.tdee || {};
+  const assessmentMeta = getAssessmentMeta(registration, fallbackSequence);
 
   return {
     id: registration._id.toString(),
     createdAt: registration.createdAt,
+    submittedAt: assessmentMeta.submittedAt || registration.createdAt,
+    sequence: assessmentMeta.sequence || null,
     lifeScore: assessment.lifeScore || 0,
     components: assessment.components || { body: 0, sleep: 0, activity: 0 },
     bmi: {
@@ -86,23 +113,173 @@ function buildHistoryItem(registration) {
   };
 }
 
-async function buildRegistrationHistory(email, currentRegistrationId) {
-  if (!email) {
-    return [];
+function buildDeltaMetric(label, currentValue, previousValue, decimals) {
+  const current = roundNumber(currentValue, decimals);
+  const previous = roundNumber(previousValue, decimals);
+
+  if (current === null) {
+    return {
+      label,
+      current: null,
+      previous,
+      delta: null,
+      direction: 'flat',
+    };
   }
 
-  const registrations = await MvpRegistration.find({ email: String(email).trim().toLowerCase() })
-    .sort({ createdAt: -1 })
-    .limit(6);
-
-  return registrations.map((registration) => {
-    const historyItem = buildHistoryItem(registration);
-
+  if (previous === null) {
     return {
-      ...historyItem,
-      isCurrent: String(historyItem.id) === String(currentRegistrationId),
+      label,
+      current,
+      previous: null,
+      delta: null,
+      direction: 'new',
     };
-  });
+  }
+
+  const delta = roundNumber(current - previous, decimals);
+  let direction = 'flat';
+
+  if (delta > 0) {
+    direction = 'up';
+  } else if (delta < 0) {
+    direction = 'down';
+  }
+
+  return {
+    label,
+    current,
+    previous,
+    delta,
+    direction,
+  };
+}
+
+function buildProgressSummary(currentItem, previousItem, totalAssessments) {
+  if (!currentItem) {
+    return 'Dashboard dang cho du lieu de theo doi tien trinh.';
+  }
+
+  if (!previousItem) {
+    return totalAssessments > 1
+      ? 'Day la moc du lieu som trong hanh trinh cua ban. Tiep tuc cap nhat de dashboard nhin ra xu huong ro hon.'
+      : 'Day la assessment dau tien. Tu lan tiep theo, dashboard se bat dau hien su thay doi theo thoi gian.';
+  }
+
+  const lifeScoreDelta = roundNumber((currentItem.lifeScore || 0) - (previousItem.lifeScore || 0), 0) || 0;
+
+  if (lifeScoreDelta > 0) {
+    return `So voi lan truoc, Life Score da tang ${lifeScoreDelta} diem. Day la dau hieu nen tang dang cai thien theo huong tich cuc.`;
+  }
+
+  if (lifeScoreDelta < 0) {
+    return `So voi lan truoc, Life Score dang giam ${Math.abs(lifeScoreDelta)} diem. Hay uu tien xem lai nhung tru cot dang bi tut nhu sleep hoac activity.`;
+  }
+
+  return 'So voi lan truoc, Life Score dang giu muc on dinh. Day la luc tot de tap trung toi uu nhung nhom thanh phan con thap.';
+}
+
+function buildProgressData(registrations, currentRegistrationId) {
+  if (!registrations.length) {
+    return {
+      summary: 'Dashboard dang cho du lieu de theo doi tien trinh.',
+      hasPrevious: false,
+      comparedSequence: null,
+      metrics: {},
+      timeline: [],
+    };
+  }
+
+  const currentIndex = registrations.findIndex(
+    (registration) => String(registration._id) === String(currentRegistrationId)
+  );
+  const safeCurrentIndex = currentIndex >= 0 ? currentIndex : registrations.length - 1;
+  const currentRegistration = registrations[safeCurrentIndex];
+  const previousRegistration = safeCurrentIndex > 0 ? registrations[safeCurrentIndex - 1] : null;
+  const currentAssessment = currentRegistration.assessment || {};
+  const previousAssessment = previousRegistration ? (previousRegistration.assessment || {}) : {};
+
+  return {
+    summary: buildProgressSummary(
+      buildHistoryItem(currentRegistration, safeCurrentIndex + 1),
+      previousRegistration ? buildHistoryItem(previousRegistration, safeCurrentIndex) : null,
+      registrations.length
+    ),
+    hasPrevious: Boolean(previousRegistration),
+    comparedSequence: previousRegistration ? getAssessmentMeta(previousRegistration, safeCurrentIndex).sequence : null,
+    metrics: {
+      lifeScore: buildDeltaMetric('Life Score', currentAssessment.lifeScore, previousAssessment.lifeScore, 0),
+      body: buildDeltaMetric('Body', (currentAssessment.components || {}).body, (previousAssessment.components || {}).body, 0),
+      sleep: buildDeltaMetric('Sleep', (currentAssessment.components || {}).sleep, (previousAssessment.components || {}).sleep, 0),
+      activity: buildDeltaMetric('Activity', (currentAssessment.components || {}).activity, (previousAssessment.components || {}).activity, 0),
+    },
+    timeline: registrations.map((registration, index) => {
+      const historyItem = buildHistoryItem(registration, index + 1);
+
+      return {
+        id: historyItem.id,
+        sequence: historyItem.sequence,
+        createdAt: historyItem.createdAt,
+        lifeScore: historyItem.lifeScore,
+        components: historyItem.components,
+        isCurrent: String(historyItem.id) === String(currentRegistrationId),
+      };
+    }),
+  };
+}
+
+async function buildRegistrationTracking(email, currentRegistrationId) {
+  if (!email) {
+    return {
+      history: [],
+      historyMeta: {
+        totalAssessments: 0,
+        currentSequence: null,
+        firstSubmittedAt: null,
+        latestSubmittedAt: null,
+      },
+      progress: buildProgressData([], currentRegistrationId),
+    };
+  }
+
+  const registrations = await MvpRegistration.find({ email: normalizeEmail(email) })
+    .sort({ createdAt: 1 });
+
+  const currentRegistration = registrations.find(
+    (registration) => String(registration._id) === String(currentRegistrationId)
+  );
+  const recentHistory = registrations
+    .slice(-8)
+    .reverse()
+    .map((registration) => {
+      const registrationIndex = registrations.findIndex(
+        (currentItem) => String(currentItem._id) === String(registration._id)
+      );
+      const historyItem = buildHistoryItem(registration, registrationIndex + 1);
+
+      return {
+        ...historyItem,
+        isCurrent: String(historyItem.id) === String(currentRegistrationId),
+      };
+    });
+
+  return {
+    history: recentHistory,
+    historyMeta: {
+      totalAssessments: registrations.length,
+      currentSequence: currentRegistration
+        ? getAssessmentMeta(
+          currentRegistration,
+          registrations.findIndex((registration) => String(registration._id) === String(currentRegistrationId)) + 1
+        ).sequence
+        : null,
+      firstSubmittedAt: registrations[0] ? (registrations[0].assessmentMeta || {}).submittedAt || registrations[0].createdAt : null,
+      latestSubmittedAt: registrations[registrations.length - 1]
+        ? (registrations[registrations.length - 1].assessmentMeta || {}).submittedAt || registrations[registrations.length - 1].createdAt
+        : null,
+    },
+    progress: buildProgressData(registrations, currentRegistrationId),
+  };
 }
 
 async function createRegistration(payload) {
@@ -113,16 +290,30 @@ async function createRegistration(payload) {
   }
 
   const assessment = buildAssessment(payload);
+  const normalizedEmail = normalizeEmail(payload.email);
+  const currentSequence = (await MvpRegistration.countDocuments({ email: normalizedEmail })) + 1;
   const registration = await MvpRegistration.create({
     ...payload,
+    email: normalizedEmail,
+    assessmentMeta: {
+      assessmentVersion: 'v1',
+      sequence: currentSequence,
+      submittedAt: new Date(),
+    },
     assessment,
   });
   const responseData = mapRegistrationToResponse(registration);
-  const history = await buildRegistrationHistory(registration.email, registration._id);
+  const tracking = await buildRegistrationTracking(registration.email, registration._id);
 
   return {
     ...responseData,
-    history,
+    assessmentMeta: {
+      ...(responseData.assessmentMeta || {}),
+      sequence: tracking.historyMeta.currentSequence,
+    },
+    history: tracking.history,
+    historyMeta: tracking.historyMeta,
+    progress: tracking.progress,
   };
 }
 
@@ -148,11 +339,17 @@ async function getRegistrationById(id) {
   }
 
   const responseData = mapRegistrationToResponse(registration);
-  const history = await buildRegistrationHistory(registration.email, registration._id);
+  const tracking = await buildRegistrationTracking(registration.email, registration._id);
 
   return {
     ...responseData,
-    history,
+    assessmentMeta: {
+      ...(responseData.assessmentMeta || {}),
+      sequence: tracking.historyMeta.currentSequence,
+    },
+    history: tracking.history,
+    historyMeta: tracking.historyMeta,
+    progress: tracking.progress,
   };
 }
 

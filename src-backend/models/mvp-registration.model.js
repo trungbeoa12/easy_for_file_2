@@ -84,6 +84,21 @@ const mvpRegistrationSchema = new mongoose.Schema(
       enum: ['new', 'reviewed', 'contacted', 'rejected'],
       default: 'new',
     },
+    assessmentMeta: {
+      assessmentVersion: {
+        type: String,
+        default: 'v1',
+      },
+      sequence: {
+        type: Number,
+        min: 1,
+        default: 1,
+      },
+      submittedAt: {
+        type: Date,
+        default: null,
+      },
+    },
     assessment: {
       bmi: {
         value: { type: Number, default: null },

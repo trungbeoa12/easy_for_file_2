@@ -240,6 +240,8 @@
     var contextSource = elements.contextSourceElement;
     var contextUpdated = elements.contextUpdatedElement;
     var contextMessage = elements.contextMessageElement;
+    var historyMeta = record.historyMeta || {};
+    var assessmentMeta = record.assessmentMeta || {};
     var sourceLabel = "Tu local";
     var message = "Dashboard dang hien assessment gan nhat cua ban.";
 
@@ -253,6 +255,10 @@
     } else if (viewState === "fallback") {
       sourceLabel = "Local fallback";
       message = "Khong tai duoc ban ghi theo id, nen dashboard tam hien du lieu gan nhat da luu tren trinh duyet nay.";
+    }
+
+    if (historyMeta.totalAssessments && assessmentMeta.sequence) {
+      message += " Hien tai day la lan assessment thu " + assessmentMeta.sequence + " tren tong " + historyMeta.totalAssessments + " lan da luu.";
     }
 
     contextSource.textContent = sourceLabel;
@@ -310,7 +316,7 @@
 
       article.innerHTML =
         '<div class="dashboard-history-card__top">' +
-        '<div class="dashboard-history-card__date">' + formatHistoryDate(item.createdAt) + "</div>" +
+        '<div class="dashboard-history-card__date">Lan #' + (item.sequence || "--") + " • " + formatHistoryDate(item.createdAt) + "</div>" +
         (item.isCurrent ? '<span class="dashboard-history-card__badge">Ban ghi hien tai</span>' : "") +
         "</div>" +
         '<p class="dashboard-history-card__meta">' + (metaBits.join(" • ") || "Assessment da duoc luu") + "</p>" +
@@ -323,10 +329,146 @@
     });
   }
 
+  function formatDelta(delta) {
+    if (typeof delta !== "number" || Number.isNaN(delta)) {
+      return "Moi";
+    }
+
+    if (delta > 0) {
+      return "+" + delta;
+    }
+
+    if (delta < 0) {
+      return String(delta);
+    }
+
+    return "0";
+  }
+
+  function renderProgressCards(container, progress) {
+    var metrics = progress && progress.metrics ? progress.metrics : {};
+    var keys = ["lifeScore", "body", "sleep", "activity"];
+    var comparedLabel = progress && progress.comparedSequence
+      ? "vs lan #" + progress.comparedSequence
+      : "vs lan truoc";
+
+    container.innerHTML = "";
+
+    keys.forEach(function (key) {
+      var metric = metrics[key];
+      var article = document.createElement("article");
+      var deltaClass = "is-flat";
+      var deltaLabel = "Moi";
+
+      if (metric && metric.direction === "up") {
+        deltaClass = "is-up";
+      } else if (metric && metric.direction === "down") {
+        deltaClass = "is-down";
+      } else if (metric && metric.direction === "new") {
+        deltaClass = "is-new";
+      }
+
+      if (metric) {
+        deltaLabel = formatDelta(metric.delta);
+      }
+
+      var currentValue = (metric && typeof metric.current === "number")
+        ? metric.current + "/100"
+        : "--";
+
+      article.className = "dashboard-progress-card";
+      article.innerHTML =
+        '<span class="dashboard-progress-card__label">' + ((metric && metric.label) || key) + "</span>" +
+        '<strong class="dashboard-progress-card__value">' + currentValue + "</strong>" +
+        '<span class="dashboard-progress-card__delta ' + deltaClass + '">' + deltaLabel + " " + comparedLabel + "</span>";
+      container.appendChild(article);
+    });
+  }
+
+  function renderProgressMeta(container, historyMeta, progress) {
+    if (!container) {
+      return;
+    }
+
+    var bits = [];
+    var currentSequence = historyMeta && historyMeta.currentSequence;
+    var totalAssessments = historyMeta && historyMeta.totalAssessments;
+    var comparedSequence = progress && progress.comparedSequence;
+
+    if (currentSequence) {
+      bits.push("Dang xem lan #" + currentSequence);
+    }
+
+    if (totalAssessments) {
+      bits.push("Tong " + totalAssessments + " lan assessment");
+    }
+
+    if (comparedSequence) {
+      bits.push("So sanh truc tiep voi lan #" + comparedSequence);
+    }
+
+    if (!bits.length) {
+      container.hidden = true;
+      container.textContent = "";
+      return;
+    }
+
+    container.textContent = bits.join(" • ");
+    container.hidden = false;
+  }
+
+  function renderProgressTimeline(container, progress, historyMeta) {
+    var timeline = progress && Array.isArray(progress.timeline) ? progress.timeline : [];
+
+    container.innerHTML = "";
+
+    if (!timeline.length) {
+      container.innerHTML = '<p class="dashboard-timeline__empty">Chua co timeline assessment.</p>';
+      return;
+    }
+
+    if (historyMeta && historyMeta.totalAssessments) {
+      var intro = document.createElement("p");
+      intro.className = "dashboard-timeline__intro";
+      intro.textContent = "Tong cong " + historyMeta.totalAssessments + " lan assessment da duoc luu cho email nay.";
+      container.appendChild(intro);
+    }
+
+    timeline.forEach(function (item) {
+      var article = document.createElement("article");
+      article.className = "dashboard-timeline__item";
+      article.innerHTML =
+        '<div class="dashboard-timeline__top">' +
+        '<strong>Lan #' + (item.sequence || "--") + "</strong>" +
+        '<span>' + formatHistoryDate(item.createdAt) + "</span>" +
+        "</div>" +
+        '<div class="dashboard-timeline__life-score">' +
+        '<span>Life Score</span>' +
+        '<strong>' + (typeof item.lifeScore === "number" ? item.lifeScore : "--") + "/100</strong>" +
+        "</div>" +
+        '<div class="dashboard-timeline__bars">' +
+        '<span style="width:' + Number((item.components || {}).body || 0) + '%">Body</span>' +
+        '<span style="width:' + Number((item.components || {}).sleep || 0) + '%">Sleep</span>' +
+        '<span style="width:' + Number((item.components || {}).activity || 0) + '%">Activity</span>' +
+        "</div>" +
+        '<a class="dashboard-inline-link" href="dashboard.html?id=' + encodeURIComponent(item.id) + '">' +
+        (item.isCurrent ? "Ban ghi hien tai" : "Mo assessment nay") +
+        "</a>";
+
+      if (item.isCurrent) {
+        article.classList.add("is-current");
+      }
+
+      container.appendChild(article);
+    });
+  }
+
   function renderDashboard(record, elements, viewState) {
     var assessment = record.assessment || {};
     var bmi = assessment.bmi || null;
     var tdee = assessment.tdee || null;
+    var progress = record.progress || {};
+    var historyMeta = record.historyMeta || {};
 
     if (elements.summaryElement) {
       elements.summaryElement.textContent = assessment.summary || "Dashboard dang cho du lieu assessment gan nhat cua ban.";
@@ -401,6 +543,23 @@
       renderHistory(elements.historyContainer, record);
     }
 
+    if (elements.progressSummaryElement) {
+      elements.progressSummaryElement.textContent = progress.summary
+        || "Dashboard se bat dau so sanh thay doi khi ban co tu 2 lan assessment tro len.";
+    }
+
+    if (elements.progressMetaElement) {
+      renderProgressMeta(elements.progressMetaElement, historyMeta, progress);
+    }
+
+    if (elements.progressCardsContainer) {
+      renderProgressCards(elements.progressCardsContainer, progress);
+    }
+
+    if (elements.progressTimelineContainer) {
+      renderProgressTimeline(elements.progressTimelineContainer, progress, historyMeta);
+    }
+
     renderContext(elements, record, viewState);
   }
 
@@ -427,6 +586,10 @@
       recommendationsContainer: document.querySelector("[data-dashboard-recommendations]"),
       profileContainer: document.querySelector("[data-dashboard-profile-list]"),
       historyContainer: document.querySelector("[data-dashboard-history]"),
+      progressSummaryElement: document.querySelector("[data-dashboard-progress-summary]"),
+      progressMetaElement: document.querySelector("[data-dashboard-progress-meta]"),
+      progressCardsContainer: document.querySelector("[data-dashboard-progress-cards]"),
+      progressTimelineContainer: document.querySelector("[data-dashboard-progress-timeline]"),
       contextBlock: document.querySelector("[data-dashboard-context]"),
       contextSourceElement: document.querySelector("[data-dashboard-context-source]"),
       contextUpdatedElement: document.querySelector("[data-dashboard-context-updated]"),
