@@ -46,9 +46,11 @@ cd src && python3 -m http.server 8080
 
 ### Deploy Vercel (site tĩnh)
 
-Repo có `vercel.json`: **Output Directory = `src`**, không build — đúng với đường dẫn trong HTML (`/pages/...`, `/assets/...`). Trang chủ: rewrite `/` → `/pages/index.html`.
+Repo GitHub chính thức: **[trungbeoa12/easy_for_file_2](https://github.com/trungbeoa12/easy_for_file_2)** — khi kết nối Vercel, chọn đúng repo này (tránh import nhầm repo khác).
 
-Trên Vercel Dashboard: **Framework Preset = Other**, để trống **Build Command** (hoặc giống `vercel.json`), **Output Directory** = `src` nếu dashboard không đọc file.
+`vercel.json`: **Output Directory = `src`**, build no-op (`exit 0`) — khớp đường dẫn trong HTML (`/pages/...`, `/assets/...`). Trang chủ: rewrite `/` → `/pages/index.html`.
+
+Trên Vercel Dashboard: **Framework Preset = Other**; **Output Directory** = `src` nếu dashboard không lấy từ `vercel.json`.
 
 **Lưu ý:** `npm start` / API MongoDB **không** chạy kiểu server dài trên Vercel chỉ với cấu hình này; production API cần Serverless Functions hoặc host riêng (Railway, Render, …).
 
@@ -58,26 +60,6 @@ Trên Vercel Dashboard: **Framework Preset = Other**, để trống **Build Comm
 2. `npm install` (lần đầu), rồi `npm start` — **http://localhost:3000** mở thẳng site (redirect tới `/pages/index.html`). Kiểm tra API: **http://localhost:3000/api/health** (text xác nhận backend).
 
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
-
-## Deploy Vercel
-
-Hiện tại nên deploy theo dạng **static site** để đưa phần giao diện lên trước, chưa phụ thuộc Node/MongoDB.
-
-1. Import repo này vào Vercel.
-2. Framework Preset: **Other**.
-3. Build Command: để trống.
-4. Output Directory: để trống.
-5. Deploy.
-
-File **`vercel.json`** đã map các URL public sau:
-
-- `/` → trang chuyển hướng sang `/pages/index.html`
-- `/pages/*` → `src/pages/*`
-- `/styles/*` → `src/styles/*`
-- `/scripts/*` → `src/scripts/*`
-- `/assets/*` → `src/assets/*`
-
-Nhờ vậy các đường dẫn tương đối hiện tại trong HTML vẫn hoạt động trên Vercel mà chưa cần refactor cấu trúc thư mục.
 
 ## Import / đường dẫn (ví dụ)
 
