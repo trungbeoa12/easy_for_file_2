@@ -59,6 +59,31 @@
     return t ? { Authorization: "Bearer " + t } : {};
   }
 
+  function logout() {
+    var token = getToken();
+
+    if (!token) {
+      clearSession();
+      return Promise.resolve();
+    }
+
+    return fetch(buildApiUrl("/api/auth/logout"), {
+      method: "POST",
+      headers: Object.assign(
+        {
+          Accept: "application/json",
+        },
+        getAuthHeaders()
+      ),
+    })
+      .catch(function () {
+        return null;
+      })
+      .then(function () {
+        clearSession();
+      });
+  }
+
   function updateAuthBars() {
     var user = getUser();
     var bars = document.querySelectorAll("[data-auth-bar]");
@@ -85,8 +110,10 @@
 
     document.querySelectorAll("[data-auth-logout]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        clearSession();
-        window.location.href = "index.html";
+        btn.disabled = true;
+        logout().finally(function () {
+          window.location.href = "login.html";
+        });
       });
     });
   }
@@ -96,6 +123,7 @@
     getUser: getUser,
     setSession: setSession,
     clearSession: clearSession,
+    logout: logout,
     getAuthHeaders: getAuthHeaders,
     buildApiUrl: buildApiUrl,
     updateAuthBars: updateAuthBars,
