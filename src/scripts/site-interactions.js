@@ -4,6 +4,7 @@
   var scrollRevealSelector = ".scroll-reveal";
   var mvpFormSelector = "[data-mvp-form]";
   var apiRegistrationPath = "/api/mvp-registrations";
+  var latestAssessmentStorageKey = "eflLatestAssessment";
 
   function getApiBaseUrl() {
     var config = window.EFL_CONFIG || {};
@@ -14,6 +15,14 @@
 
   function buildApiUrl(path) {
     return getApiBaseUrl() + path;
+  }
+
+  function saveLatestAssessment(record) {
+    try {
+      window.localStorage.setItem(latestAssessmentStorageKey, JSON.stringify(record));
+    } catch (error) {
+      // Ignore storage errors so the submit flow still succeeds.
+    }
   }
 
   function setFormFeedback(feedbackElement, type, message) {
@@ -381,6 +390,10 @@
           })
           .then(function (data) {
             var record = data && data.data ? data.data : null;
+
+            if (record) {
+              saveLatestAssessment(record);
+            }
 
             if (record && (form.getAttribute("data-source-page") || "") === "mvp-registration") {
               renderResultPanel(form, record);

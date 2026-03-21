@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="description" content="Dashboard MVP Easy-for-Life — tổng quan assessment hiện tại, chỉ số nền tảng và ưu tiên cải thiện.">
+        <meta name="author" content="Easy-for-Life">
+
+        <title>Easy-for-Life — Dashboard MVP</title>
+
+        <link href="../styles/vendor/bootstrap.min.css" rel="stylesheet">
+        <link href="../styles/vendor/bootstrap-icons.css" rel="stylesheet">
+        <link href="../styles/site-theme.css" rel="stylesheet">
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-12 d-flex flex-wrap">
+                        <p class="d-flex me-4 mb-0">
+                            <i class="bi-rocket-takeoff me-2"></i>
+                            Dashboard MVP đang hiển thị snapshot assessment gần nhất của bạn
+                        </p>
+
+                        <p class="d-flex mb-0">
+                            <i class="bi-envelope me-2"></i>
+
+                            <a href="mailto:agile_khong_lai_rai@easyforlife.app">
+                                agile_khong_lai_rai@easyforlife.app
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-3 col-12 ms-auto d-lg-block d-none">
+                        <ul class="social-icon">
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-twitter"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-facebook"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-instagram"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-youtube"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="navbar navbar-expand-lg bg-light shadow-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="../assets/images/logo-main.png" class="logo img-fluid" alt="Easy-for-Life">
+                    <span>
+                        Easy-for-Life
+                        <small>QUALITY OF LIFE PLATFORM</small>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_1">Trang chủ</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="mvp-registration.html">Assessment</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="dashboard.html" aria-current="page">Dashboard</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="news.html">Cập nhật</a>
+                        </li>
+
+                        <li class="nav-item ms-3">
+                            <a class="nav-link custom-btn custom-border-btn btn" href="mvp-registration.html">Làm assessment mới</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="dashboard-page">
+            <section class="dashboard-hero">
+                <div class="container">
+                    <div class="dashboard-hero__surface">
+                        <div class="row align-items-center">
+                            <div class="col-lg-7 col-12">
+                                <span class="dashboard-hero__eyebrow">Dashboard MVP</span>
+                                <h1 class="dashboard-hero__title">Từ assessment đầu tiên đến bức tranh rõ ràng hơn về cuộc sống bạn.</h1>
+                                <p class="dashboard-hero__lead" data-dashboard-summary>
+                                    Sau khi bạn gửi form assessment, dashboard sẽ gom các chỉ số nền tảng, benchmark và gợi ý để bạn biết nên ưu tiên điều gì trước.
+                                </p>
+                                <div class="dashboard-hero__actions">
+                                    <a href="mvp-registration.html" class="custom-btn btn">Làm assessment đầy đủ</a>
+                                    <a href="#dashboard-sections" class="dashboard-ghost-link">Xem tổng quan hiện tại</a>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-5 col-12">
+                                <div class="dashboard-hero__aside">
+                                    <div class="dashboard-lifescale">
+                                        <span class="dashboard-lifescale__label">Life readiness</span>
+                                        <strong class="dashboard-lifescale__value" data-life-readiness>--</strong>
+                                        <span class="dashboard-lifescale__meta">Moc tam thoi de sang Phase 2 voi Life Score day du</span>
+                                    </div>
+
+                                    <div class="dashboard-hero__chips" data-dashboard-status-chips></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-padding dashboard-summary-section" id="dashboard-sections">
+                <div class="container">
+                    <div class="row g-4">
+                        <div class="col-xl-8 col-lg-7 col-12">
+                            <div class="dashboard-panel">
+                                <div class="dashboard-panel__header">
+                                    <div>
+                                        <p class="dashboard-panel__eyebrow">Snapshot hien tai</p>
+                                        <h3 class="dashboard-panel__title">Tong quan assessment gan nhat</h3>
+                                    </div>
+                                    <a href="mvp-registration.html" class="dashboard-inline-link">Cap nhat assessment</a>
+                                </div>
+
+                                <div class="dashboard-metric-grid">
+                                    <article class="dashboard-metric-card">
+                                        <span class="dashboard-metric-card__label">BMI</span>
+                                        <strong class="dashboard-metric-card__value" data-dashboard-bmi-value>--</strong>
+                                        <span class="dashboard-metric-card__meta" data-dashboard-bmi-meta>Chua co du lieu</span>
+                                    </article>
+
+                                    <article class="dashboard-metric-card">
+                                        <span class="dashboard-metric-card__label">TDEE</span>
+                                        <strong class="dashboard-metric-card__value" data-dashboard-tdee-value>--</strong>
+                                        <span class="dashboard-metric-card__meta" data-dashboard-tdee-meta>Chua co du lieu</span>
+                                    </article>
+
+                                    <article class="dashboard-metric-card">
+                                        <span class="dashboard-metric-card__label">Ngu trung binh</span>
+                                        <strong class="dashboard-metric-card__value" data-dashboard-sleep-value>--</strong>
+                                        <span class="dashboard-metric-card__meta">Moc tham chieu 7-9 gio</span>
+                                    </article>
+
+                                    <article class="dashboard-metric-card">
+                                        <span class="dashboard-metric-card__label">Van dong</span>
+                                        <strong class="dashboard-metric-card__value" data-dashboard-activity-value>--</strong>
+                                        <span class="dashboard-metric-card__meta">Danh gia tu habits hien tai</span>
+                                    </article>
+                                </div>
+
+                                <div class="dashboard-breakdown">
+                                    <div class="dashboard-breakdown__header">
+                                        <h4 class="dashboard-breakdown__title">Breakdown theo nhom chi so</h4>
+                                        <p class="dashboard-breakdown__intro">Ban nay chua la Life Score chinh thuc, nhung da cho thay nhom nao dang can uu tien hon.</p>
+                                    </div>
+
+                                    <div class="dashboard-breakdown__rows" data-dashboard-breakdown></div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-panel mt-4">
+                                <div class="dashboard-panel__header">
+                                    <div>
+                                        <p class="dashboard-panel__eyebrow">Benchmark</p>
+                                        <h3 class="dashboard-panel__title">Dien giai va huong hanh dong</h3>
+                                    </div>
+                                </div>
+
+                                <p class="dashboard-benchmark-summary" data-dashboard-benchmark-summary>
+                                    Chua co du lieu benchmark. Hay hoan thanh assessment de mo dashboard nay.
+                                </p>
+
+                                <div class="dashboard-recommendation-grid" data-dashboard-recommendations></div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4 col-lg-5 col-12">
+                            <div class="dashboard-panel dashboard-panel--compact">
+                                <div class="dashboard-panel__header">
+                                    <div>
+                                        <p class="dashboard-panel__eyebrow">Ho so nhanh</p>
+                                        <h3 class="dashboard-panel__title">Thong tin dau vao</h3>
+                                    </div>
+                                </div>
+
+                                <div class="dashboard-profile-list" data-dashboard-profile-list></div>
+                            </div>
+
+                            <div class="dashboard-panel dashboard-panel--compact mt-4">
+                                <div class="dashboard-panel__header">
+                                    <div>
+                                        <p class="dashboard-panel__eyebrow">Huong mo rong</p>
+                                        <h3 class="dashboard-panel__title">Phase tiep theo</h3>
+                                    </div>
+                                </div>
+
+                                <ul class="dashboard-next-list">
+                                    <li>Life Score day du voi trong so theo tung nhom chi so</li>
+                                    <li>Chart dong de so sanh body, sleep, activity va work-life</li>
+                                    <li>History assessment de theo doi su tien bo theo thoi gian</li>
+                                    <li>Daily plan beta de chuyen insight thanh hanh dong moi ngay</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-12 mb-4">
+                        <img src="../assets/images/logo-main.png" class="logo img-fluid" alt="">
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-12 mb-4">
+                        <h5 class="site-footer-title mb-3">Lien ket nhanh</h5>
+
+                        <ul class="footer-menu">
+                            <li class="footer-menu-item"><a href="index.html#section_2" class="footer-menu-link">Tam nhin</a></li>
+                            <li class="footer-menu-item"><a href="mvp-registration.html" class="footer-menu-link">Assessment</a></li>
+                            <li class="footer-menu-item"><a href="dashboard.html" class="footer-menu-link">Dashboard</a></li>
+                            <li class="footer-menu-item"><a href="news.html" class="footer-menu-link">Cap nhat</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-12 mx-auto">
+                        <h5 class="site-footer-title mb-3">Thong tin lien he</h5>
+
+                        <p class="text-white d-flex mb-2">
+                            <i class="bi-telephone me-2"></i>
+                            <a href="tel:+84967466997" class="site-footer-link">+84 967 466 997</a>
+                        </p>
+
+                        <p class="text-white d-flex">
+                            <i class="bi-envelope me-2"></i>
+                            <a href="mailto:agile_khong_lai_rai@easyforlife.app" class="site-footer-link">agile_khong_lai_rai@easyforlife.app</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="../scripts/vendor/jquery.min.js"></script>
+        <script src="../scripts/vendor/bootstrap.min.js"></script>
+        <script src="../scripts/navbar-sticky.js"></script>
+        <script src="../scripts/stats-counter.js"></script>
+        <script src="../scripts/app-config.js"></script>
+        <script src="../scripts/site-interactions.js"></script>
+        <script src="../scripts/dashboard.js"></script>
+    </body>
+</html>
