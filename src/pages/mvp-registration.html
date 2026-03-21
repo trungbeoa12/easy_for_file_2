@@ -135,7 +135,7 @@ https://templatemo.com/tm-581-kind-heart-charity
                     <div class="row">
 
                         <div class="col-lg-6 col-12 mx-auto">
-                            <form class="custom-form donate-form" action="#" method="post" role="form">
+                            <form class="custom-form donate-form" id="mvp-registration-form" data-mvp-form data-source-page="mvp-registration" action="#" method="post" role="form">
                                 <h3 class="mb-3">Đăng ký quan tâm MVP</h3>
                                 <p class="mb-4 small text-muted">Giai đoạn 1: form thu thập đa bước, tính BMI &amp; TDEE và tư vấn rule-based. Chúng tôi sẽ liên hệ khi có suất thử nghiệm.</p>
 
@@ -150,6 +150,47 @@ https://templatemo.com/tm-581-kind-heart-charity
 
                                     <div class="col-lg-6 col-12 mt-2">
                                         <input type="email" name="mvp-email" id="mvp-email" pattern="[^ @]*@[^ @]*" class="form-control" placeholder="Email" required>
+                                    </div>
+
+                                    <div class="col-lg-12 col-12 mt-3">
+                                        <h5 class="mb-3">Chỉ số nền tảng cho BMI &amp; TDEE</h5>
+                                        <p class="mb-3 small text-muted">Các trường dưới đây giúp hệ thống chuẩn bị cho bước đánh giá năng lượng, cân nặng và tư vấn cá nhân hóa ở phiên bản kế tiếp.</p>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6 col-12 mt-2">
+                                        <input type="number" name="mvp-age" id="mvp-age" class="form-control" placeholder="Tuổi" min="10" max="100" step="1">
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6 col-12 mt-2">
+                                        <select name="mvp-gender" id="mvp-gender" class="form-control" aria-label="Giới tính">
+                                            <option value="">Giới tính</option>
+                                            <option value="male">Nam</option>
+                                            <option value="female">Nữ</option>
+                                            <option value="other">Khác / không muốn trả lời</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6 col-12 mt-2">
+                                        <input type="number" name="mvp-sleep-hours" id="mvp-sleep-hours" class="form-control" placeholder="Ngủ trung bình (giờ)" min="0" max="24" step="0.5">
+                                    </div>
+
+                                    <div class="col-lg-6 col-md-6 col-12 mt-2">
+                                        <input type="number" name="mvp-height-cm" id="mvp-height-cm" class="form-control" placeholder="Chiều cao (cm)" min="100" max="250" step="0.1">
+                                    </div>
+
+                                    <div class="col-lg-6 col-md-6 col-12 mt-2">
+                                        <input type="number" name="mvp-weight-kg" id="mvp-weight-kg" class="form-control" placeholder="Cân nặng (kg)" min="20" max="300" step="0.1">
+                                    </div>
+
+                                    <div class="col-lg-12 col-12 mt-2">
+                                        <select name="mvp-activity-level" id="mvp-activity-level" class="form-control" aria-label="Mức độ vận động">
+                                            <option value="">Mức độ vận động hiện tại</option>
+                                            <option value="sedentary">Ít vận động, chủ yếu ngồi nhiều</option>
+                                            <option value="light">Vận động nhẹ 1-3 buổi mỗi tuần</option>
+                                            <option value="moderate">Vận động vừa 3-5 buổi mỗi tuần</option>
+                                            <option value="active">Vận động cao 6-7 buổi mỗi tuần</option>
+                                            <option value="very-active">Cường độ rất cao / lao động nặng</option>
+                                        </select>
                                     </div>
 
                                     <div class="col-lg-12 col-12 mt-3">
@@ -228,10 +269,35 @@ https://templatemo.com/tm-581-kind-heart-charity
                                     </div>
 
                                     <div class="col-lg-12 col-12">
-                                        <button type="submit" class="form-control mt-4">Gửi đăng ký MVP</button>
+                                        <div class="mvp-form-feedback" data-form-feedback aria-live="polite"></div>
+                                        <button type="submit" class="form-control mt-4" data-submit-button>Gửi đăng ký MVP</button>
                                     </div>
                                 </div>
                             </form>
+
+                            <section class="mvp-result-panel" id="mvp-result-panel" data-result-panel hidden aria-live="polite">
+                                <div class="mvp-result-panel__eyebrow">Ket qua tu dong</div>
+                                <h4 class="mvp-result-panel__title">Ban da co snapshot suc khoe co ban</h4>
+                                <p class="mvp-result-panel__intro" data-result-summary>
+                                    He thong se hien BMI, TDEE va mot so dien giai ngan ngay sau khi ban gui form.
+                                </p>
+
+                                <div class="mvp-result-grid">
+                                    <article class="mvp-result-card">
+                                        <span class="mvp-result-card__label">BMI</span>
+                                        <strong class="mvp-result-card__value" data-result-bmi-value>--</strong>
+                                        <span class="mvp-result-card__meta" data-result-bmi-category>Chua co du lieu</span>
+                                    </article>
+
+                                    <article class="mvp-result-card">
+                                        <span class="mvp-result-card__label">TDEE</span>
+                                        <strong class="mvp-result-card__value" data-result-tdee-value>--</strong>
+                                        <span class="mvp-result-card__meta" data-result-tdee-meta>Chua co du lieu</span>
+                                    </article>
+                                </div>
+
+                                <div class="mvp-result-tags" data-result-tags></div>
+                            </section>
                         </div>
 
                     </div>
