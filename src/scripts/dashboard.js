@@ -680,7 +680,13 @@
           }
           showEmpty();
         })
-        .catch(function () {
+        .catch(function (err) {
+          var status = err && err.status;
+          if (status === 401 || status === 403) {
+            if (auth && typeof auth.clearSession === "function") {
+              auth.clearSession();
+            }
+          }
           var fallback = getStoredAssessment();
           if (fallback) {
             showContent(fallback, "fallback");
