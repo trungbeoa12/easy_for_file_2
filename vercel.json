@@ -5,6 +5,8 @@
   "rewrites": [
     { "source": "/", "destination": "/pages/index.html" },
     { "source": "/index.html", "destination": "/pages/index.html" },
+    { "source": "/login.html", "destination": "/pages/login.html" },
+    { "source": "/register.html", "destination": "/pages/register.html" },
     { "source": "/mvp-registration.html", "destination": "/pages/mvp-registration.html" },
     { "source": "/dashboard.html", "destination": "/pages/dashboard.html" },
     { "source": "/news.html", "destination": "/pages/news.html" },
