@@ -1,6 +1,6 @@
 # Easy-for-Life (static site)
 
-Landing page tĩnh (HTML/CSS/JS). Mở **`src/pages/index.html`** trong trình duyệt, hoặc dùng file **`index.html`** ở thư mục gốc để chuyển hướng.
+Landing page tĩnh (HTML/CSS/JS). Mở **`src/pages/index.html`** trong trình duyệt, hoặc dùng file **`index.html`** ở thư mục gốc để chuyển hướng sang **`/pages/index.html`**.
 
 ## Cấu trúc thư mục
 
@@ -47,9 +47,29 @@ cd src && python3 -m http.server 8080
 ### API Node (MongoDB Atlas)
 
 1. Sao chép `.env.example` → `.env`, dán `MONGODB_URI` từ Atlas (chuỗi `mongodb+srv://...`).
-2. `npm install` (lần đầu), rồi `npm start` — server mặc định **http://localhost:3000** (`GET /` trả về text xác nhận).
+2. `npm install` (lần đầu), rồi `npm start` — **http://localhost:3000** mở thẳng site (redirect tới `/pages/index.html`). Kiểm tra API: **http://localhost:3000/api/health** (text xác nhận backend).
 
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
+
+## Deploy Vercel
+
+Hiện tại nên deploy theo dạng **static site** để đưa phần giao diện lên trước, chưa phụ thuộc Node/MongoDB.
+
+1. Import repo này vào Vercel.
+2. Framework Preset: **Other**.
+3. Build Command: để trống.
+4. Output Directory: để trống.
+5. Deploy.
+
+File **`vercel.json`** đã map các URL public sau:
+
+- `/` → trang chuyển hướng sang `/pages/index.html`
+- `/pages/*` → `src/pages/*`
+- `/styles/*` → `src/styles/*`
+- `/scripts/*` → `src/scripts/*`
+- `/assets/*` → `src/assets/*`
+
+Nhờ vậy các đường dẫn tương đối hiện tại trong HTML vẫn hoạt động trên Vercel mà chưa cần refactor cấu trúc thư mục.
 
 ## Import / đường dẫn (ví dụ)
 
