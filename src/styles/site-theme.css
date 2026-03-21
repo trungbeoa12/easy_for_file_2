@@ -1517,6 +1517,32 @@ blockquote::before {
   font-weight: 600;
 }
 
+.mvp-result-insights {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.mvp-result-insights__title {
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.mvp-result-insights__summary {
+  margin-bottom: 14px;
+  color: #475569;
+}
+
+.mvp-result-recommendations {
+  margin: 0;
+  padding-left: 18px;
+  color: #334155;
+}
+
+.mvp-result-recommendations li + li {
+  margin-top: 8px;
+}
+
 @media screen and (max-width: 767px) {
   .mvp-result-panel {
     padding: 22px 18px;

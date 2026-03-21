@@ -97,6 +97,19 @@ const mvpRegistrationSchema = new mongoose.Schema(
         activityLevel: { type: String, default: '' },
         formula: { type: String, default: '' },
       },
+      summary: {
+        type: String,
+        default: '',
+      },
+      statuses: {
+        sleep: { type: String, default: '' },
+        activity: { type: String, default: '' },
+        bmi: { type: String, default: '' },
+      },
+      recommendations: {
+        type: [String],
+        default: [],
+      },
     },
   },
   {

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const MvpRegistration = require('../models/mvp-registration.model');
+const { buildBenchmarkAssessment } = require('./benchmark.service');
 const { calculateBmi } = require('../utils/health/bmi');
 const { calculateTdee } = require('../utils/health/tdee');
 
@@ -13,10 +14,19 @@ function buildAssessment(payload) {
     weightKg: payload.bodyMetrics.weightKg,
     activityLevel: payload.habits.activityLevel,
   });
+  const benchmark = buildBenchmarkAssessment({
+    bmi,
+    tdee,
+    habits: payload.habits,
+    goals: payload.goals,
+  });
 
   return {
     bmi,
     tdee,
+    summary: benchmark.summary,
+    statuses: benchmark.statuses,
+    recommendations: benchmark.recommendations,
   };
 }
 

@@ -165,23 +165,13 @@
 
   function buildResultSummary(record) {
     var assessment = record.assessment || {};
-    var bmi = assessment.bmi || null;
-    var tdee = assessment.tdee || null;
-    var summaryParts = [];
+    var summary = assessment.summary || "";
 
-    if (bmi && typeof bmi.value === "number") {
-      summaryParts.push("BMI hien tai cua ban la " + bmi.value + ", thuoc nhom " + bmi.category + ".");
+    if (summary) {
+      return summary;
     }
 
-    if (tdee && typeof tdee.tdee === "number") {
-      summaryParts.push("TDEE uoc tinh khoang " + tdee.tdee + " kcal/ngay de duy tri muc van dong hien tai.");
-    }
-
-    if (!summaryParts.length) {
-      summaryParts.push("Dang ky da duoc ghi nhan. Khi ban bo sung day du chi so hon, he thong se tra ve snapshot suc khoe chi tiet hon.");
-    }
-
-    return summaryParts.join(" ");
+    return "Dang ky da duoc ghi nhan. Khi ban bo sung day du chi so hon, he thong se tra ve snapshot suc khoe chi tiet hon.";
   }
 
   function buildResultTags(record) {
@@ -232,7 +222,10 @@
     var tdeeValueElement;
     var tdeeMetaElement;
     var tagsElement;
+    var benchmarkSummaryElement;
+    var recommendationsElement;
     var tags;
+    var recommendations;
     var assessment;
     var bmi;
     var tdee;
@@ -247,10 +240,13 @@
     tdeeValueElement = panel.querySelector("[data-result-tdee-value]");
     tdeeMetaElement = panel.querySelector("[data-result-tdee-meta]");
     tagsElement = panel.querySelector("[data-result-tags]");
+    benchmarkSummaryElement = panel.querySelector("[data-result-benchmark-summary]");
+    recommendationsElement = panel.querySelector("[data-result-recommendations]");
     assessment = record.assessment || {};
     bmi = assessment.bmi || null;
     tdee = assessment.tdee || null;
     tags = buildResultTags(record);
+    recommendations = Array.isArray(assessment.recommendations) ? assessment.recommendations : [];
 
     if (summaryElement) {
       summaryElement.textContent = buildResultSummary(record);
@@ -281,6 +277,19 @@
         tag.className = "mvp-result-tag";
         tag.textContent = tagText;
         tagsElement.appendChild(tag);
+      });
+    }
+
+    if (benchmarkSummaryElement) {
+      benchmarkSummaryElement.textContent = assessment.summary || "He thong chua co du benchmark de dien giai sau hon.";
+    }
+
+    if (recommendationsElement) {
+      recommendationsElement.innerHTML = "";
+      recommendations.forEach(function (item) {
+        var recommendation = document.createElement("li");
+        recommendation.textContent = item;
+        recommendationsElement.appendChild(recommendation);
       });
     }
 
