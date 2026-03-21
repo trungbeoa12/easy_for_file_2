@@ -65,6 +65,46 @@ function mapRegistrationToResponse(registration) {
   };
 }
 
+function buildHistoryItem(registration) {
+  const assessment = registration.assessment || {};
+  const bmi = assessment.bmi || {};
+  const tdee = assessment.tdee || {};
+
+  return {
+    id: registration._id.toString(),
+    createdAt: registration.createdAt,
+    lifeScore: assessment.lifeScore || 0,
+    components: assessment.components || { body: 0, sleep: 0, activity: 0 },
+    bmi: {
+      value: typeof bmi.value === 'number' ? bmi.value : null,
+      category: bmi.category || '',
+    },
+    tdee: {
+      tdee: typeof tdee.tdee === 'number' ? tdee.tdee : null,
+    },
+    summary: assessment.summary || '',
+  };
+}
+
+async function buildRegistrationHistory(email, currentRegistrationId) {
+  if (!email) {
+    return [];
+  }
+
+  const registrations = await MvpRegistration.find({ email: String(email).trim().toLowerCase() })
+    .sort({ createdAt: -1 })
+    .limit(6);
+
+  return registrations.map((registration) => {
+    const historyItem = buildHistoryItem(registration);
+
+    return {
+      ...historyItem,
+      isCurrent: String(historyItem.id) === String(currentRegistrationId),
+    };
+  });
+}
+
 async function createRegistration(payload) {
   if (mongoose.connection.readyState !== 1) {
     const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
@@ -77,8 +117,13 @@ async function createRegistration(payload) {
     ...payload,
     assessment,
   });
+  const responseData = mapRegistrationToResponse(registration);
+  const history = await buildRegistrationHistory(registration.email, registration._id);
 
-  return mapRegistrationToResponse(registration);
+  return {
+    ...responseData,
+    history,
+  };
 }
 
 async function getRegistrationById(id) {
@@ -102,7 +147,13 @@ async function getRegistrationById(id) {
     throw error;
   }
 
-  return mapRegistrationToResponse(registration);
+  const responseData = mapRegistrationToResponse(registration);
+  const history = await buildRegistrationHistory(registration.email, registration._id);
+
+  return {
+    ...responseData,
+    history,
+  };
 }
 
 module.exports = {

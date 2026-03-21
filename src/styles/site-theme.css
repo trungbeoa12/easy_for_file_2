@@ -1622,6 +1622,46 @@ blockquote::before {
   margin-top: 26px;
 }
 
+.dashboard-context {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(248, 251, 253, 0.92);
+  border: 1px solid rgba(90, 111, 128, 0.1);
+}
+
+.dashboard-context__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.dashboard-context__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(115, 159, 224, 0.14);
+  color: #30576b;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-context__meta,
+.dashboard-context__message {
+  color: #4d6473;
+}
+
+.dashboard-context__message {
+  margin-top: 10px;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
 .dashboard-ghost-link,
 .dashboard-inline-link {
   color: #30576b;
@@ -1896,6 +1936,61 @@ blockquote::before {
   text-align: right;
 }
 
+.dashboard-history-list {
+  display: grid;
+  gap: 14px;
+}
+
+.dashboard-history-card,
+.dashboard-history-empty {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: #f8fbfd;
+  border: 1px solid rgba(90, 111, 128, 0.08);
+}
+
+.dashboard-history-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.dashboard-history-card__date {
+  color: #22313d;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dashboard-history-card__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(91, 193, 172, 0.16);
+  color: #1f7669;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-history-card__meta,
+.dashboard-history-card__summary,
+.dashboard-history-empty p {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #627687;
+  line-height: 1.6;
+}
+
+.dashboard-history-card__summary {
+  color: #44525d;
+  margin-bottom: 12px;
+}
+
+.dashboard-history-empty strong {
+  color: #22313d;
+}
+
 .dashboard-next-list {
   margin: 0;
   padding-left: 20px;
@@ -1933,7 +2028,8 @@ blockquote::before {
 
   .dashboard-panel__header,
   .dashboard-breakdown-row__top,
-  .dashboard-profile-list__item {
+  .dashboard-profile-list__item,
+  .dashboard-history-card__top {
     flex-direction: column;
   }
 

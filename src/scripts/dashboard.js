@@ -29,6 +29,24 @@
     }
   }
 
+  function formatUpdatedAt(value) {
+    if (!value) {
+      return "Cap nhat gan nhat";
+    }
+
+    try {
+      return "Cap nhat " + new Intl.DateTimeFormat("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value));
+    } catch (error) {
+      return "Cap nhat gan nhat";
+    }
+  }
+
   function fetchAssessmentById(id) {
     return fetch(buildApiUrl("/api/mvp-registrations/" + encodeURIComponent(id)), {
       method: "GET",
@@ -184,7 +202,7 @@
       ["Ho ten", record.fullName || "--"],
       ["Email", record.email || "--"],
       ["Tuoi", profile.age || "--"],
-      ["Gioi tinh", profile.gender || "--"],
+      ["Gioi tinh", formatGender(profile.gender) || "--"],
       ["Chieu cao", bodyMetrics.heightCm ? bodyMetrics.heightCm + " cm" : "--"],
       ["Can nang", bodyMetrics.weightKg ? bodyMetrics.weightKg + " kg" : "--"],
       ["Ngu trung binh", habits.sleepHours || habits.sleepHours === 0 ? habits.sleepHours + " gio" : "--"],
@@ -204,7 +222,95 @@
     });
   }
 
-  function renderDashboard(record, elements) {
+  function renderContext(elements, record, viewState) {
+    var contextBlock = elements.contextBlock;
+    var contextSource = elements.contextSourceElement;
+    var contextUpdated = elements.contextUpdatedElement;
+    var contextMessage = elements.contextMessageElement;
+    var sourceLabel = "Tu local";
+    var message = "Dashboard dang hien assessment gan nhat cua ban.";
+
+    if (!contextBlock || !contextSource || !contextUpdated || !contextMessage) {
+      return;
+    }
+
+    if (viewState === "api") {
+      sourceLabel = "Tu API";
+      message = "Ban dang xem ban ghi tu production backend. Link nay co the chia se lai de mo dung assessment nay.";
+    } else if (viewState === "fallback") {
+      sourceLabel = "Local fallback";
+      message = "Khong tai duoc ban ghi theo id, nen dashboard tam hien du lieu gan nhat da luu tren trinh duyet nay.";
+    }
+
+    contextSource.textContent = sourceLabel;
+    contextUpdated.textContent = formatUpdatedAt(record.updatedAt || record.createdAt);
+    contextMessage.textContent = message;
+    contextBlock.hidden = false;
+  }
+
+  function formatHistoryDate(value) {
+    if (!value) {
+      return "Moi cap nhat";
+    }
+
+    try {
+      return new Intl.DateTimeFormat("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value));
+    } catch (error) {
+      return "Moi cap nhat";
+    }
+  }
+
+  function renderHistory(container, record) {
+    var history = Array.isArray(record.history) ? record.history : [];
+
+    container.innerHTML = "";
+
+    if (!history.length) {
+      container.innerHTML =
+        '<div class="dashboard-history-empty">' +
+        "<strong>Day la assessment dau tien cua ban.</strong>" +
+        "<p>Khi ban cap nhat them lan nua, dashboard se hien duoc lich su va xu huong tien bo ngay tai day.</p>" +
+        "</div>";
+      return;
+    }
+
+    history.forEach(function (item) {
+      var article = document.createElement("article");
+      article.className = "dashboard-history-card";
+
+      var metaBits = [];
+      if (typeof item.lifeScore === "number") {
+        metaBits.push("Life Score " + item.lifeScore);
+      }
+      if (item.bmi && typeof item.bmi.value === "number") {
+        metaBits.push("BMI " + item.bmi.value);
+      }
+      if (item.tdee && typeof item.tdee.tdee === "number") {
+        metaBits.push("TDEE " + item.tdee.tdee + " kcal");
+      }
+
+      article.innerHTML =
+        '<div class="dashboard-history-card__top">' +
+        '<div class="dashboard-history-card__date">' + formatHistoryDate(item.createdAt) + "</div>" +
+        (item.isCurrent ? '<span class="dashboard-history-card__badge">Ban ghi hien tai</span>' : "") +
+        "</div>" +
+        '<p class="dashboard-history-card__meta">' + (metaBits.join(" • ") || "Assessment da duoc luu") + "</p>" +
+        '<p class="dashboard-history-card__summary">' +
+        (item.summary || "Ban ghi nay da duoc luu va san sang de so sanh trong dashboard.") +
+        "</p>" +
+        '<a class="dashboard-inline-link" href="dashboard.html?id=' + encodeURIComponent(item.id) + '">Mo ban ghi nay</a>';
+
+      container.appendChild(article);
+    });
+  }
+
+  function renderDashboard(record, elements, viewState) {
     var assessment = record.assessment || {};
     var bmi = assessment.bmi || null;
     var tdee = assessment.tdee || null;
@@ -277,6 +383,12 @@
     if (elements.profileContainer) {
       renderProfileList(elements.profileContainer, record);
     }
+
+    if (elements.historyContainer) {
+      renderHistory(elements.historyContainer, record);
+    }
+
+    renderContext(elements, record, viewState);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -301,10 +413,15 @@
       benchmarkSummaryElement: document.querySelector("[data-dashboard-benchmark-summary]"),
       recommendationsContainer: document.querySelector("[data-dashboard-recommendations]"),
       profileContainer: document.querySelector("[data-dashboard-profile-list]"),
+      historyContainer: document.querySelector("[data-dashboard-history]"),
+      contextBlock: document.querySelector("[data-dashboard-context]"),
+      contextSourceElement: document.querySelector("[data-dashboard-context-source]"),
+      contextUpdatedElement: document.querySelector("[data-dashboard-context-updated]"),
+      contextMessageElement: document.querySelector("[data-dashboard-context-message]"),
     };
 
-    function showContent(record) {
-      renderDashboard(record, elements);
+    function showContent(record, viewState) {
+      renderDashboard(record, elements, viewState || "local");
       setPanelsVisible(loadingEl, emptyEl, mainEl, "content");
     }
 
@@ -319,12 +436,12 @@
         .then(function (payload) {
           var record = payload && payload.data ? payload.data : null;
           if (record) {
-            showContent(record);
+            showContent(record, "api");
             return;
           }
           var fallback = getStoredAssessment();
           if (fallback) {
-            showContent(fallback);
+            showContent(fallback, "fallback");
           } else {
             showEmpty();
           }
@@ -332,7 +449,7 @@
         .catch(function () {
           var fallback = getStoredAssessment();
           if (fallback) {
-            showContent(fallback);
+            showContent(fallback, "fallback");
           } else {
             showEmpty();
           }
@@ -347,6 +464,6 @@
       return;
     }
 
-    showContent(record);
+    showContent(record, "local");
   });
 })();
