@@ -89,6 +89,19 @@
     return mapping[activityLevel] || "Chua co du lieu";
   }
 
+  function formatGender(gender) {
+    if (gender === "male") {
+      return "Nam";
+    }
+    if (gender === "female") {
+      return "Nu";
+    }
+    if (gender === "other") {
+      return "Khac";
+    }
+    return "";
+  }
+
   function buildBreakdown(record) {
     var components = (record.assessment || {}).components || {};
 
@@ -421,7 +434,11 @@
     };
 
     function showContent(record, viewState) {
-      renderDashboard(record, elements, viewState || "local");
+      try {
+        renderDashboard(record, elements, viewState || "local");
+      } catch (err) {
+        console.error("Dashboard render error:", err);
+      }
       setPanelsVisible(loadingEl, emptyEl, mainEl, "content");
     }
 
