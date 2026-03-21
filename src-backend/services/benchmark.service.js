@@ -139,4 +139,6 @@ function buildBenchmarkAssessment({ bmi, tdee, habits, goals }) {
 
 module.exports = {
   buildBenchmarkAssessment,
+  getSleepStatus,
+  getActivityStatus,
 };

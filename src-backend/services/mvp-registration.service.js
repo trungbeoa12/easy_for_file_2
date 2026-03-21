@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const MvpRegistration = require('../models/mvp-registration.model');
 const { buildBenchmarkAssessment } = require('./benchmark.service');
+const { buildLifeScore } = require('./life-score.service');
 const { calculateBmi } = require('../utils/health/bmi');
 const { calculateTdee } = require('../utils/health/tdee');
 
@@ -20,10 +21,19 @@ function buildAssessment(payload) {
     habits: payload.habits,
     goals: payload.goals,
   });
+  const lifeScore = buildLifeScore({
+    bmiStatus: benchmark.statuses.bmi,
+    sleepStatus: benchmark.statuses.sleep,
+    activityStatus: benchmark.statuses.activity,
+    bmi,
+  });
 
   return {
     bmi,
     tdee,
+    lifeScore: lifeScore.lifeScore,
+    components: lifeScore.components,
+    explanation: lifeScore.explanation,
     summary: benchmark.summary,
     statuses: benchmark.statuses,
     recommendations: benchmark.recommendations,
@@ -31,6 +41,8 @@ function buildAssessment(payload) {
 }
 
 function mapRegistrationToResponse(registration) {
+  const assessment = registration.assessment || {};
+
   return {
     id: registration._id.toString(),
     fullName: registration.fullName,
@@ -44,6 +56,9 @@ function mapRegistrationToResponse(registration) {
     consent: registration.consent,
     sourcePage: registration.sourcePage,
     status: registration.status,
+    lifeScore: assessment.lifeScore || 0,
+    components: assessment.components || { body: 0, sleep: 0, activity: 0 },
+    explanation: assessment.explanation || '',
     assessment: registration.assessment,
     createdAt: registration.createdAt,
     updatedAt: registration.updatedAt,

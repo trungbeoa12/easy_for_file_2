@@ -71,52 +71,27 @@
     return mapping[activityLevel] || "Chua co du lieu";
   }
 
-  function calculateLifeReadiness(record) {
-    var score = 45;
-    var assessment = record.assessment || {};
-    var statuses = assessment.statuses || {};
-
-    if (statuses.bmi === "normal") {
-      score += 20;
-    } else if (statuses.bmi === "overweight" || statuses.bmi === "underweight") {
-      score += 10;
-    }
-
-    if (statuses.sleep === "balanced") {
-      score += 15;
-    } else if (statuses.sleep === "low" || statuses.sleep === "high") {
-      score += 6;
-    }
-
-    if (statuses.activity === "balanced") {
-      score += 15;
-    } else if (statuses.activity === "high") {
-      score += 12;
-    } else if (statuses.activity === "low") {
-      score += 5;
-    }
-
-    return Math.max(0, Math.min(100, score));
-  }
-
   function buildBreakdown(record) {
-    var statuses = (record.assessment || {}).statuses || {};
+    var components = (record.assessment || {}).components || {};
 
     return [
       {
-        label: "Body metrics",
-        value: statuses.bmi === "normal" ? 78 : statuses.bmi ? 56 : 0,
-        description: statuses.bmi === "normal" ? "BMI dang o vung can bang." : "Can tiep tuc theo doi can nang va body metrics.",
+        key: "body",
+        label: "Body",
+        value: Number(components.body || 0),
+        description: "Nhom nay phan anh tinh trang body metrics va benchmark BMI hien tai.",
       },
       {
+        key: "sleep",
         label: "Sleep",
-        value: statuses.sleep === "balanced" ? 74 : statuses.sleep ? 48 : 0,
-        description: statuses.sleep === "balanced" ? "Giac ngu dang kha on." : "Ngu la tru cot can uu tien som.",
+        value: Number(components.sleep || 0),
+        description: "Nhom nay uu tien chat luong phuc hoi va thoi luong ngu trung binh.",
       },
       {
+        key: "activity",
         label: "Activity",
-        value: statuses.activity === "balanced" ? 76 : statuses.activity === "high" ? 82 : statuses.activity ? 44 : 0,
-        description: statuses.activity === "low" ? "Van dong hien tai con thap." : "Muc van dong dang tao nen tang kha tot.",
+        value: Number(components.activity || 0),
+        description: "Nhom nay cho thay muc van dong hien tai dang ho tro co the den muc nao.",
       },
     ];
   }
@@ -184,6 +159,22 @@
     });
   }
 
+  function renderChart(container, record) {
+    var items = buildBreakdown(record);
+
+    container.innerHTML = "";
+
+    items.forEach(function (item) {
+      var chartItem = document.createElement("div");
+      chartItem.className = "dashboard-chart__item";
+      chartItem.innerHTML =
+        '<span class="dashboard-chart__label">' + item.label + "</span>" +
+        '<div class="dashboard-chart__track"><span style="height:' + item.value + '%"></span></div>' +
+        '<strong class="dashboard-chart__value">' + item.value + "</strong>";
+      container.appendChild(chartItem);
+    });
+  }
+
   function renderProfileList(container, record) {
     var profile = record.profile || {};
     var bodyMetrics = record.bodyMetrics || {};
@@ -223,7 +214,11 @@
     }
 
     if (elements.readinessElement) {
-      elements.readinessElement.textContent = calculateLifeReadiness(record) + "/100";
+      elements.readinessElement.textContent = (assessment.lifeScore || 0) + "/100";
+    }
+
+    if (elements.lifeScoreExplanationElement) {
+      elements.lifeScoreExplanationElement.textContent = assessment.explanation || "Life Score se duoc cap nhat khi assessment co du du lieu.";
     }
 
     if (elements.chipContainer) {
@@ -264,6 +259,10 @@
       renderBreakdown(elements.breakdownContainer, record);
     }
 
+    if (elements.chartContainer) {
+      renderChart(elements.chartContainer, record);
+    }
+
     if (elements.benchmarkSummaryElement) {
       elements.benchmarkSummaryElement.textContent = assessment.summary || "Chua co benchmark summary.";
     }
@@ -288,7 +287,8 @@
 
     var elements = {
       summaryElement: document.querySelector("[data-dashboard-summary]"),
-      readinessElement: document.querySelector("[data-life-readiness]"),
+      readinessElement: document.querySelector("[data-life-score]"),
+      lifeScoreExplanationElement: document.querySelector("[data-life-score-explanation]"),
       chipContainer: document.querySelector("[data-dashboard-status-chips]"),
       bmiValueElement: document.querySelector("[data-dashboard-bmi-value]"),
       bmiMetaElement: document.querySelector("[data-dashboard-bmi-meta]"),
@@ -297,6 +297,7 @@
       sleepValueElement: document.querySelector("[data-dashboard-sleep-value]"),
       activityValueElement: document.querySelector("[data-dashboard-activity-value]"),
       breakdownContainer: document.querySelector("[data-dashboard-breakdown]"),
+      chartContainer: document.querySelector("[data-dashboard-chart]"),
       benchmarkSummaryElement: document.querySelector("[data-dashboard-benchmark-summary]"),
       recommendationsContainer: document.querySelector("[data-dashboard-recommendations]"),
       profileContainer: document.querySelector("[data-dashboard-profile-list]"),
