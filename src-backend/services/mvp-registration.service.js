@@ -10,13 +10,6 @@ function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
-function guestEmailQuery(normalizedEmail) {
-  return {
-    email: normalizedEmail,
-    $or: [{ userId: null }, { userId: { $exists: false } }],
-  };
-}
-
 function toUserObjectId(userId) {
   if (!userId) {
     return null;
@@ -252,14 +245,12 @@ function buildProgressData(registrations, currentRegistrationId) {
   };
 }
 
-async function buildRegistrationTracking({ email, userId, currentRegistrationId }) {
+async function buildRegistrationTracking({ userId, currentRegistrationId }) {
   const userObjectId = toUserObjectId(userId);
   let registrations;
 
   if (userObjectId) {
     registrations = await MvpRegistration.find({ userId: userObjectId }).sort({ createdAt: 1 });
-  } else if (email) {
-    registrations = await MvpRegistration.find(guestEmailQuery(normalizeEmail(email))).sort({ createdAt: 1 });
   } else {
     return {
       history: [],
@@ -313,7 +304,6 @@ async function buildRegistrationTracking({ email, userId, currentRegistrationId 
 async function assembleRegistrationResponse(registration) {
   const responseData = mapRegistrationToResponse(registration);
   const tracking = await buildRegistrationTracking({
-    email: registration.email,
     userId: registration.userId,
     currentRegistrationId: registration._id,
   });
@@ -341,12 +331,13 @@ async function createRegistration(payload, options = {}) {
   const normalizedEmail = normalizeEmail(payload.email);
   const userObjectId = toUserObjectId(options.userId);
 
-  let currentSequence;
-  if (userObjectId) {
-    currentSequence = (await MvpRegistration.countDocuments({ userId: userObjectId })) + 1;
-  } else {
-    currentSequence = (await MvpRegistration.countDocuments(guestEmailQuery(normalizedEmail))) + 1;
+  if (!userObjectId) {
+    const error = new Error('Authentication required to save MVP registration.');
+    error.statusCode = 401;
+    throw error;
   }
+
+  const currentSequence = (await MvpRegistration.countDocuments({ userId: userObjectId })) + 1;
 
   const registration = await MvpRegistration.create({
     ...payload,
@@ -363,7 +354,7 @@ async function createRegistration(payload, options = {}) {
   return assembleRegistrationResponse(registration);
 }
 
-async function getRegistrationById(id) {
+async function getRegistrationById(id, viewerUserId) {
   if (mongoose.connection.readyState !== 1) {
     const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
     error.statusCode = 503;
@@ -382,6 +373,16 @@ async function getRegistrationById(id) {
     const error = new Error('MVP registration not found.');
     error.statusCode = 404;
     throw error;
+  }
+
+  if (viewerUserId != null && String(viewerUserId).length) {
+    const expectedId = toUserObjectId(viewerUserId);
+    const ownerId = registration.userId ? registration.userId.toString() : '';
+    if (!expectedId || !ownerId || ownerId !== String(expectedId)) {
+      const error = new Error('MVP registration not found.');
+      error.statusCode = 404;
+      throw error;
+    }
   }
 
   return assembleRegistrationResponse(registration);

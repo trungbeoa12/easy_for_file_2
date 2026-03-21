@@ -69,11 +69,11 @@ Trên Vercel Dashboard: **Framework Preset = Other**; **Output Directory** = `sr
 
 **MVP registration API**
 
-- `POST /api/mvp-registrations` — tạo bản ghi; có Bearer token thì gắn **`userId`** và đồng bộ **email theo tài khoản**; không token vẫn gửi khách (chỉ `email` trên form).
-- `GET /api/mvp-registrations/me` — **cần đăng nhập** — trả assessment **mới nhất** của user + `history` / `progress` (cùng shape gần với GET theo `id`).
-- `GET /api/mvp-registrations/:id` — lấy một bản ghi theo id (public link như trước).
+- `POST /api/mvp-registrations` — **bắt buộc Bearer**; lưu bản ghi với **`userId`** + email theo tài khoản. Không còn gửi khách (guest) lên server.
+- `GET /api/mvp-registrations/me` — **cần đăng nhập** — assessment mới nhất + `history` / `progress` (chỉ theo `userId`, không gom theo email guest).
+- `GET /api/mvp-registrations/:id` — **cần đăng nhập** — chỉ trả bản ghi nếu `userId` trùng chủ sở hữu (404 nếu không thuộc tài khoản).
 
-**Dashboard:** `dashboard.html?id=...` → API theo id; **đã đăng nhập và không có `id`** → `GET /api/mvp-registrations/me`; không thì `localStorage` `eflLatestAssessment`. Trang **`login.html`**, **`register.html`**. Trên `localhost:3000`, `app-config.js` dùng API cùng origin; deploy tĩnh (Vercel) cần `API_BASE_URL` + `CORS_ORIGIN` trên Railway gồm domain Vercel.
+**Dashboard:** có `?id=` → `GET /:id` (có token); không `id` + có token → `GET /me`; chưa đăng nhập → không gọi API; cache `localStorage` chỉ dùng khi không đánh dấu snapshot tài khoản (xem `auth-client` / `dashboard.js`). Trang **`login.html`**, **`register.html`**. Trên `localhost:3000`, `app-config.js` dùng API cùng origin; deploy tĩnh (Vercel) cần `API_BASE_URL` + `CORS_ORIGIN` trên Railway gồm domain Vercel.
 
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
 

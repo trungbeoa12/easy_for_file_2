@@ -7,6 +7,17 @@ const requestLogger = require('./middlewares/request-logger');
 const notFoundHandler = require('./middlewares/not-found');
 const errorHandler = require('./middlewares/error-handler');
 
+const LOCAL_PAGE_ALIASES = {
+  '/': 'pages/index.html',
+  '/index.html': 'pages/index.html',
+  '/login.html': 'pages/login.html',
+  '/register.html': 'pages/register.html',
+  '/mvp-registration.html': 'pages/mvp-registration.html',
+  '/dashboard.html': 'pages/dashboard.html',
+  '/news.html': 'pages/news.html',
+  '/news-detail.html': 'pages/news-detail.html',
+};
+
 function createCorsOptions() {
   const corsOrigin = process.env.CORS_ORIGIN || '*';
 
@@ -39,8 +50,10 @@ function createApp() {
 
   app.use(express.static(path.join(__dirname, '..', 'src')));
 
-  app.get('/', (req, res) => {
-    res.redirect('/pages/index.html');
+  Object.entries(LOCAL_PAGE_ALIASES).forEach(([sourcePath, destinationPath]) => {
+    app.get(sourcePath, (req, res) => {
+      res.sendFile(path.join(__dirname, '..', 'src', destinationPath));
+    });
   });
 
   app.use('/api', apiRoutes);

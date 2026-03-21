@@ -5,11 +5,23 @@ const User = require('../models/user.model');
 const SALT_ROUNDS = 10;
 const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '7d';
 
+/** Only for local/dev when .env has no JWT_SECRET. Production must set JWT_SECRET. */
+const DEV_FALLBACK_JWT_SECRET = 'easyforlife-local-dev-only-secret-key';
+
 function getJwtSecret() {
-  const secret = process.env.JWT_SECRET;
+  let secret = process.env.JWT_SECRET;
+  const isProd = process.env.NODE_ENV === 'production';
+
   if (!secret || secret.length < 16) {
-    throw new Error('JWT_SECRET must be set (min 16 characters) for auth.');
+    if (isProd) {
+      throw new Error('JWT_SECRET must be set (min 16 characters) for auth.');
+    }
+    secret = DEV_FALLBACK_JWT_SECRET;
+    console.warn(
+      '[auth] JWT_SECRET missing or too short — using dev-only default. Set JWT_SECRET in .env for stable local tokens and for production.'
+    );
   }
+
   return secret;
 }
 

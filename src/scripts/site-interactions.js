@@ -21,7 +21,7 @@
   function saveLatestAssessment(record) {
     try {
       window.localStorage.setItem(latestAssessmentStorageKey, JSON.stringify(record));
-      window.localStorage.removeItem(latestAssessmentFromAccountKey);
+      window.localStorage.setItem(latestAssessmentFromAccountKey, "1");
     } catch (error) {
       // Ignore storage errors so the submit flow still succeeds.
     }
@@ -370,6 +370,15 @@
           return;
         }
 
+        if (!window.EFL_AUTH || !window.EFL_AUTH.getToken || !window.EFL_AUTH.getToken()) {
+          setFormFeedback(
+            feedbackElement,
+            "is-error",
+            "Vui lòng đăng nhập hoặc đăng ký để gửi và lưu assessment vào tài khoản."
+          );
+          return;
+        }
+
         var payload = buildPayloadForForm(form);
 
         setFormFeedback(feedbackElement, "is-loading", "Đang gửi thông tin đăng ký...");
@@ -393,6 +402,7 @@
             }).then(function (data) {
               if (!response.ok) {
                 var error = new Error(mapErrorMessage(data));
+                error.status = response.status;
                 error.responsePayload = data;
                 throw error;
               }
@@ -429,11 +439,11 @@
             setFormFeedback(feedbackElement, "is-success", successMessage);
           })
           .catch(function (error) {
-            setFormFeedback(
-              feedbackElement,
-              "is-error",
-              error.message || "Không thể gửi đăng ký lúc này. Vui lòng thử lại sau."
-            );
+            var msg = error.message || "Không thể gửi đăng ký lúc này. Vui lòng thử lại sau.";
+            if (error.status === 401 || error.status === 403) {
+              msg = "Vui lòng đăng nhập hoặc đăng ký để lưu assessment vào tài khoản.";
+            }
+            setFormFeedback(feedbackElement, "is-error", msg);
           })
           .finally(function () {
             if (submitButton) {
@@ -446,6 +456,12 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("[data-mvp-login-notice]").forEach(function (el) {
+      if (window.EFL_AUTH && window.EFL_AUTH.getToken && window.EFL_AUTH.getToken()) {
+        el.hidden = true;
+      }
+    });
+
     var revealElements = document.querySelectorAll(scrollRevealSelector);
     if (!revealElements.length) {
       bindMvpForms();

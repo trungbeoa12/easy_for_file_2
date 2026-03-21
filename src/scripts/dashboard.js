@@ -56,10 +56,14 @@
     }
   }
 
-  function fetchAssessmentById(id) {
+  function fetchAssessmentById(id, auth) {
+    var headers = { Accept: "application/json" };
+    if (auth && auth.getAuthHeaders) {
+      Object.assign(headers, auth.getAuthHeaders());
+    }
     return fetch(buildApiUrl("/api/mvp-registrations/" + encodeURIComponent(id)), {
       method: "GET",
-      headers: { Accept: "application/json" },
+      headers: headers,
     }).then(function (response) {
       return response.json().catch(function () {
         return null;
@@ -625,14 +629,26 @@
         if (mode === "account-empty") {
           emptyCopyEl.textContent = "Tai khoan nay chua co assessment nao. Hay hoan thanh assessment dau tien de dashboard bat dau luu lich su, diem so va tien trinh cho ban.";
         } else if (mode === "guest-empty") {
-          emptyCopyEl.innerHTML = 'Dashboard can mot ban assessment. Hay hoan thanh form dang ky MVP de xem BMI, TDEE va goi y ca nhan, hoac dang nhap de mo dashboard theo tai khoan.';
+          emptyCopyEl.innerHTML =
+            'De luu assessment va xem lai tren dashboard, hay <a href="login.html?next=mvp-registration.html">dang nhap</a> roi hoan thanh form MVP. Ket qua tam thoi (chua luu server) chi co the xem trong phien lam form truoc khi dong trang.';
+        } else if (mode === "link-requires-login") {
+          emptyCopyEl.innerHTML =
+            "Ban can dang nhap dung tai khoan so huu assessment de xem dashboard theo link nay. Lich su khong con duoc mo bang email khi chua dang nhap.";
         } else {
-          emptyCopyEl.innerHTML = 'Dashboard can mot ban assessment. Hay hoan thanh form dang ky MVP de xem BMI, TDEE va goi y ca nhan — hoac mo link co ma <code>id</code> hop le tu email/thong bao sau khi gui form.';
+          emptyCopyEl.innerHTML =
+            'Dashboard theo tai khoan can dang nhap. Hay <a href="login.html?next=dashboard.html">dang nhap</a> hoac lam assessment sau khi da co tai khoan.';
         }
       }
 
       if (emptyPrimaryAction) {
-        emptyPrimaryAction.textContent = mode === "account-empty" ? "Lam assessment dau tien" : "Quay lai lam assessment";
+        if (mode === "link-requires-login") {
+          emptyPrimaryAction.href =
+            "login.html?next=" + encodeURIComponent("dashboard.html" + (window.location.search || ""));
+          emptyPrimaryAction.textContent = "Dang nhap de xem";
+        } else {
+          emptyPrimaryAction.href = "mvp-registration.html";
+          emptyPrimaryAction.textContent = mode === "account-empty" ? "Lam assessment dau tien" : "Quay lai lam assessment";
+        }
       }
 
       if (emptySecondaryAction) {
@@ -642,37 +658,55 @@
       setPanelsVisible(loadingEl, emptyEl, mainEl, "empty");
     }
 
+    var auth = window.EFL_AUTH;
+    var authToken = auth && auth.getToken ? auth.getToken() : "";
+
     if (idParam) {
+      if (!authToken) {
+        showEmpty("link-requires-login");
+        return;
+      }
+
       setPanelsVisible(loadingEl, emptyEl, mainEl, "loading");
 
-      fetchAssessmentById(idParam.trim())
+      fetchAssessmentById(idParam.trim(), auth)
         .then(function (payload) {
           var record = payload && payload.data ? payload.data : null;
           if (record) {
+            saveLatestAssessment(record, { fromAccount: true });
             showContent(record, "api");
             return;
           }
           var fallback = getStoredAssessment();
-          if (fallback) {
+          if (fallback && !isStoredAssessmentFromAccount()) {
             showContent(fallback, "fallback");
           } else {
-            showEmpty();
+            showEmpty("guest-empty");
           }
         })
-        .catch(function () {
+        .catch(function (err) {
+          var status = err && err.status;
+          if (status === 401 || status === 403) {
+            if (auth && typeof auth.clearSession === "function") {
+              auth.clearSession();
+            }
+            showEmpty("link-requires-login");
+            return;
+          }
+          if (status === 404) {
+            showEmpty("guest-empty");
+            return;
+          }
           var fallback = getStoredAssessment();
-          if (fallback) {
+          if (fallback && !isStoredAssessmentFromAccount()) {
             showContent(fallback, "fallback");
           } else {
-            showEmpty();
+            showEmpty("guest-empty");
           }
         });
 
       return;
     }
-
-    var auth = window.EFL_AUTH;
-    var authToken = auth && auth.getToken ? auth.getToken() : "";
 
     if (authToken) {
       setPanelsVisible(loadingEl, emptyEl, mainEl, "loading");

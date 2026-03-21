@@ -42,7 +42,7 @@ async function getMyLatestRegistration(req, res, next) {
 
 async function getMvpRegistrationById(req, res, next) {
   try {
-    const registration = await getRegistrationById(req.params.id);
+    const registration = await getRegistrationById(req.params.id, req.user.id);
 
     res.status(200).json({
       success: true,

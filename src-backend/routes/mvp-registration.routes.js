@@ -5,12 +5,12 @@ const {
   getMvpRegistrationById,
   getMyLatestRegistration,
 } = require('../controllers/mvp-registration.controller');
-const { optionalAuth, requireAuth } = require('../middlewares/auth.middleware');
+const { requireAuth } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
 router.get('/me', requireAuth, getMyLatestRegistration);
-router.post('/', optionalAuth, createMvpRegistration);
-router.get('/:id', getMvpRegistrationById);
+router.post('/', requireAuth, createMvpRegistration);
+router.get('/:id', requireAuth, getMvpRegistrationById);
 
 module.exports = router;
