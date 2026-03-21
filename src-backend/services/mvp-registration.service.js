@@ -30,19 +30,7 @@ function buildAssessment(payload) {
   };
 }
 
-async function createRegistration(payload) {
-  if (mongoose.connection.readyState !== 1) {
-    const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
-    error.statusCode = 503;
-    throw error;
-  }
-
-  const assessment = buildAssessment(payload);
-  const registration = await MvpRegistration.create({
-    ...payload,
-    assessment,
-  });
-
+function mapRegistrationToResponse(registration) {
   return {
     id: registration._id.toString(),
     fullName: registration.fullName,
@@ -62,6 +50,47 @@ async function createRegistration(payload) {
   };
 }
 
+async function createRegistration(payload) {
+  if (mongoose.connection.readyState !== 1) {
+    const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const assessment = buildAssessment(payload);
+  const registration = await MvpRegistration.create({
+    ...payload,
+    assessment,
+  });
+
+  return mapRegistrationToResponse(registration);
+}
+
+async function getRegistrationById(id) {
+  if (mongoose.connection.readyState !== 1) {
+    const error = new Error('Database is not connected. Please configure MONGODB_URI before submitting registrations.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const error = new Error('Invalid registration id.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const registration = await MvpRegistration.findById(id);
+
+  if (!registration) {
+    const error = new Error('MVP registration not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return mapRegistrationToResponse(registration);
+}
+
 module.exports = {
   createRegistration,
+  getRegistrationById,
 };

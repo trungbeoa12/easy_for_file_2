@@ -95,7 +95,19 @@
             </div>
         </nav>
 
-        <main class="dashboard-page">
+        <div class="container py-3" data-dashboard-loading hidden>
+            <div class="alert alert-info mb-0" role="status">Đang tải dữ liệu dashboard...</div>
+        </div>
+
+        <div class="container section-padding text-center" data-dashboard-empty hidden>
+            <h2 class="h4 mb-3">Chưa có dữ liệu để hiển thị</h2>
+            <p class="text-muted mb-4">
+                Dashboard cần một bản assessment. Hãy hoàn thành form đăng ký MVP để xem BMI, TDEE và gợi ý cá nhân — hoặc mở link có mã <code>id</code> hợp lệ từ email/thông báo sau khi gửi form.
+            </p>
+            <a href="mvp-registration.html" class="custom-btn btn">Quay lại làm assessment</a>
+        </div>
+
+        <main class="dashboard-page" data-dashboard-main>
             <section class="dashboard-hero">
                 <div class="container">
                     <div class="dashboard-hero__surface">

@@ -59,6 +59,13 @@ Trên Vercel Dashboard: **Framework Preset = Other**; **Output Directory** = `sr
 1. Sao chép `.env.example` → `.env`, dán `MONGODB_URI` từ Atlas (chuỗi `mongodb+srv://...`).
 2. `npm install` (lần đầu), rồi `npm start` — **http://localhost:3000** mở thẳng site (redirect tới `/pages/index.html`). Kiểm tra API: **http://localhost:3000/api/health** (text xác nhận backend).
 
+**MVP registration API**
+
+- `POST /api/mvp-registrations` — tạo bản ghi; response `data` có `id` (MongoDB ObjectId string).
+- `GET /api/mvp-registrations/:id` — lấy một bản ghi (cùng shape với `data` của POST).
+
+**Dashboard:** `http://localhost:3000/pages/dashboard.html?id=<id>` (ưu tiên API; không có `id` thì đọc `localStorage` `eflLatestAssessment`). Trên `localhost:3000`, `app-config.js` dùng API cùng origin; deploy tĩnh (Vercel) cần `API_BASE_URL` trỏ tới host API (ví dụ Railway).
+
 Hoặc mở trực tiếp file `src/pages/index.html` (file://) — trình duyệt vẫn resolve đường dẫn tương đối đúng.
 
 ## Import / đường dẫn (ví dụ)

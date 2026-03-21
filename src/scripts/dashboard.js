@@ -3,12 +3,59 @@
 
   var STORAGE_KEY = "eflLatestAssessment";
 
+  function getApiBaseUrl() {
+    var config = window.EFL_CONFIG || {};
+    return String(config.API_BASE_URL || "").replace(/\/+$/, "");
+  }
+
+  function buildApiUrl(path) {
+    return getApiBaseUrl() + path;
+  }
+
+  function getQueryParam(name) {
+    try {
+      return new URLSearchParams(window.location.search).get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function getStoredAssessment() {
     try {
       var rawValue = window.localStorage.getItem(STORAGE_KEY);
       return rawValue ? JSON.parse(rawValue) : null;
     } catch (error) {
       return null;
+    }
+  }
+
+  function fetchAssessmentById(id) {
+    return fetch(buildApiUrl("/api/mvp-registrations/" + encodeURIComponent(id)), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    }).then(function (response) {
+      return response.json().catch(function () {
+        return null;
+      }).then(function (data) {
+        if (!response.ok) {
+          var err = new Error((data && data.message) || "Không tải được assessment.");
+          err.status = response.status;
+          throw err;
+        }
+        return data;
+      });
+    });
+  }
+
+  function setPanelsVisible(loadingEl, emptyEl, mainEl, state) {
+    if (loadingEl) {
+      loadingEl.hidden = state !== "loading";
+    }
+    if (emptyEl) {
+      emptyEl.hidden = state !== "empty";
+    }
+    if (mainEl) {
+      mainEl.hidden = state !== "content";
     }
   }
 
@@ -166,89 +213,139 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    var record = getStoredAssessment();
-    var summaryElement = document.querySelector("[data-dashboard-summary]");
-    var readinessElement = document.querySelector("[data-life-readiness]");
-    var chipContainer = document.querySelector("[data-dashboard-status-chips]");
-    var bmiValueElement = document.querySelector("[data-dashboard-bmi-value]");
-    var bmiMetaElement = document.querySelector("[data-dashboard-bmi-meta]");
-    var tdeeValueElement = document.querySelector("[data-dashboard-tdee-value]");
-    var tdeeMetaElement = document.querySelector("[data-dashboard-tdee-meta]");
-    var sleepValueElement = document.querySelector("[data-dashboard-sleep-value]");
-    var activityValueElement = document.querySelector("[data-dashboard-activity-value]");
-    var breakdownContainer = document.querySelector("[data-dashboard-breakdown]");
-    var benchmarkSummaryElement = document.querySelector("[data-dashboard-benchmark-summary]");
-    var recommendationsContainer = document.querySelector("[data-dashboard-recommendations]");
-    var profileContainer = document.querySelector("[data-dashboard-profile-list]");
-    var assessment;
-    var bmi;
-    var tdee;
+  function renderDashboard(record, elements) {
+    var assessment = record.assessment || {};
+    var bmi = assessment.bmi || null;
+    var tdee = assessment.tdee || null;
 
-    if (!record) {
-      return;
+    if (elements.summaryElement) {
+      elements.summaryElement.textContent = assessment.summary || "Dashboard dang cho du lieu assessment gan nhat cua ban.";
     }
 
-    assessment = record.assessment || {};
-    bmi = assessment.bmi || null;
-    tdee = assessment.tdee || null;
-
-    if (summaryElement) {
-      summaryElement.textContent = assessment.summary || "Dashboard dang cho du lieu assessment gan nhat cua ban.";
+    if (elements.readinessElement) {
+      elements.readinessElement.textContent = calculateLifeReadiness(record) + "/100";
     }
 
-    if (readinessElement) {
-      readinessElement.textContent = calculateLifeReadiness(record) + "/100";
+    if (elements.chipContainer) {
+      renderStatusChips(elements.chipContainer, record);
     }
 
-    if (chipContainer) {
-      renderStatusChips(chipContainer, record);
+    if (elements.bmiValueElement) {
+      elements.bmiValueElement.textContent = bmi && typeof bmi.value === "number" ? bmi.value : "--";
     }
 
-    if (bmiValueElement) {
-      bmiValueElement.textContent = bmi && typeof bmi.value === "number" ? bmi.value : "--";
+    if (elements.bmiMetaElement) {
+      elements.bmiMetaElement.textContent = bmi && bmi.category ? bmi.category : "Chua co du lieu BMI";
     }
 
-    if (bmiMetaElement) {
-      bmiMetaElement.textContent = bmi && bmi.category ? bmi.category : "Chua co du lieu BMI";
+    if (elements.tdeeValueElement) {
+      elements.tdeeValueElement.textContent = tdee && typeof tdee.tdee === "number" ? tdee.tdee + " kcal" : "--";
     }
 
-    if (tdeeValueElement) {
-      tdeeValueElement.textContent = tdee && typeof tdee.tdee === "number" ? tdee.tdee + " kcal" : "--";
-    }
-
-    if (tdeeMetaElement) {
-      tdeeMetaElement.textContent = tdee && typeof tdee.bmr === "number"
+    if (elements.tdeeMetaElement) {
+      elements.tdeeMetaElement.textContent = tdee && typeof tdee.bmr === "number"
         ? "BMR " + tdee.bmr + " kcal, " + tdee.formula
         : "Chua co du lieu TDEE";
     }
 
-    if (sleepValueElement) {
-      sleepValueElement.textContent = record.habits && (record.habits.sleepHours || record.habits.sleepHours === 0)
+    if (elements.sleepValueElement) {
+      elements.sleepValueElement.textContent = record.habits && (record.habits.sleepHours || record.habits.sleepHours === 0)
         ? record.habits.sleepHours + " gio"
         : "--";
     }
 
-    if (activityValueElement) {
-      activityValueElement.textContent = record.habits && record.habits.activityLevel
+    if (elements.activityValueElement) {
+      elements.activityValueElement.textContent = record.habits && record.habits.activityLevel
         ? formatActivityLevel(record.habits.activityLevel)
         : "--";
     }
 
-    if (breakdownContainer) {
-      renderBreakdown(breakdownContainer, record);
+    if (elements.breakdownContainer) {
+      renderBreakdown(elements.breakdownContainer, record);
     }
 
-    if (benchmarkSummaryElement) {
-      benchmarkSummaryElement.textContent = assessment.summary || "Chua co benchmark summary.";
+    if (elements.benchmarkSummaryElement) {
+      elements.benchmarkSummaryElement.textContent = assessment.summary || "Chua co benchmark summary.";
     }
 
-    if (recommendationsContainer) {
-      renderRecommendations(recommendationsContainer, Array.isArray(assessment.recommendations) ? assessment.recommendations : []);
+    if (elements.recommendationsContainer) {
+      renderRecommendations(
+        elements.recommendationsContainer,
+        Array.isArray(assessment.recommendations) ? assessment.recommendations : []
+      );
     }
 
-    if (profileContainer) {
-      renderProfileList(profileContainer, record);
+    if (elements.profileContainer) {
+      renderProfileList(elements.profileContainer, record);
     }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var idParam = getQueryParam("id");
+    var loadingEl = document.querySelector("[data-dashboard-loading]");
+    var emptyEl = document.querySelector("[data-dashboard-empty]");
+    var mainEl = document.querySelector("[data-dashboard-main]");
+
+    var elements = {
+      summaryElement: document.querySelector("[data-dashboard-summary]"),
+      readinessElement: document.querySelector("[data-life-readiness]"),
+      chipContainer: document.querySelector("[data-dashboard-status-chips]"),
+      bmiValueElement: document.querySelector("[data-dashboard-bmi-value]"),
+      bmiMetaElement: document.querySelector("[data-dashboard-bmi-meta]"),
+      tdeeValueElement: document.querySelector("[data-dashboard-tdee-value]"),
+      tdeeMetaElement: document.querySelector("[data-dashboard-tdee-meta]"),
+      sleepValueElement: document.querySelector("[data-dashboard-sleep-value]"),
+      activityValueElement: document.querySelector("[data-dashboard-activity-value]"),
+      breakdownContainer: document.querySelector("[data-dashboard-breakdown]"),
+      benchmarkSummaryElement: document.querySelector("[data-dashboard-benchmark-summary]"),
+      recommendationsContainer: document.querySelector("[data-dashboard-recommendations]"),
+      profileContainer: document.querySelector("[data-dashboard-profile-list]"),
+    };
+
+    function showContent(record) {
+      renderDashboard(record, elements);
+      setPanelsVisible(loadingEl, emptyEl, mainEl, "content");
+    }
+
+    function showEmpty() {
+      setPanelsVisible(loadingEl, emptyEl, mainEl, "empty");
+    }
+
+    if (idParam) {
+      setPanelsVisible(loadingEl, emptyEl, mainEl, "loading");
+
+      fetchAssessmentById(idParam.trim())
+        .then(function (payload) {
+          var record = payload && payload.data ? payload.data : null;
+          if (record) {
+            showContent(record);
+            return;
+          }
+          var fallback = getStoredAssessment();
+          if (fallback) {
+            showContent(fallback);
+          } else {
+            showEmpty();
+          }
+        })
+        .catch(function () {
+          var fallback = getStoredAssessment();
+          if (fallback) {
+            showContent(fallback);
+          } else {
+            showEmpty();
+          }
+        });
+
+      return;
+    }
+
+    var record = getStoredAssessment();
+    if (!record) {
+      showEmpty();
+      return;
+    }
+
+    showContent(record);
   });
 })();

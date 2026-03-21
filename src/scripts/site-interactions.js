@@ -314,6 +314,15 @@
       });
     }
 
+    var dashboardLink = panel.querySelector("[data-mvp-dashboard-link]");
+    if (dashboardLink) {
+      if (record && record.id) {
+        dashboardLink.href = "dashboard.html?id=" + encodeURIComponent(record.id);
+      } else {
+        dashboardLink.href = "dashboard.html";
+      }
+    }
+
     panel.hidden = false;
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
