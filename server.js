@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,7 +11,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Static site (HTML/CSS/JS/assets under src/)
+app.use(express.static(path.join(__dirname, 'src')));
+
 app.get('/', (req, res) => {
+  res.redirect('/pages/index.html');
+});
+
+app.get('/api/health', (req, res) => {
   res.type('text/plain').send('Easy for Life backend is running');
 });
 

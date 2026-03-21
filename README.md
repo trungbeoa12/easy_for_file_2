@@ -44,6 +44,14 @@ cd src && python3 -m http.server 8080
 # http://localhost:8080/pages/index.html
 ```
 
+### Deploy Vercel (site tĩnh)
+
+Repo có `vercel.json`: **Output Directory = `src`**, không build — đúng với đường dẫn trong HTML (`/pages/...`, `/assets/...`). Trang chủ: rewrite `/` → `/pages/index.html`.
+
+Trên Vercel Dashboard: **Framework Preset = Other**, để trống **Build Command** (hoặc giống `vercel.json`), **Output Directory** = `src` nếu dashboard không đọc file.
+
+**Lưu ý:** `npm start` / API MongoDB **không** chạy kiểu server dài trên Vercel chỉ với cấu hình này; production API cần Serverless Functions hoặc host riêng (Railway, Render, …).
+
 ### API Node (MongoDB Atlas)
 
 1. Sao chép `.env.example` → `.env`, dán `MONGODB_URI` từ Atlas (chuỗi `mongodb+srv://...`).

@@ -1,20 +1,8 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "exit 0",
+  "outputDirectory": "src",
   "rewrites": [
-    {
-      "source": "/pages/(.*)",
-      "destination": "/src/pages/$1"
-    },
-    {
-      "source": "/styles/(.*)",
-      "destination": "/src/styles/$1"
-    },
-    {
-      "source": "/scripts/(.*)",
-      "destination": "/src/scripts/$1"
-    },
-    {
-      "source": "/assets/(.*)",
-      "destination": "/src/assets/$1"
-    }
+    { "source": "/", "destination": "/pages/index.html" }
   ]
 }
