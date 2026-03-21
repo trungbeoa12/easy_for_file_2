@@ -7,11 +7,33 @@ const requestLogger = require('./middlewares/request-logger');
 const notFoundHandler = require('./middlewares/not-found');
 const errorHandler = require('./middlewares/error-handler');
 
-function createApp() {
-  const app = express();
+function createCorsOptions() {
   const corsOrigin = process.env.CORS_ORIGIN || '*';
 
-  app.use(cors({ origin: corsOrigin }));
+  if (corsOrigin === '*') {
+    return { origin: '*' };
+  }
+
+  const allowedOrigins = corsOrigin
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return {
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('CORS origin is not allowed.'));
+    },
+  };
+}
+
+function createApp() {
+  const app = express();
+
+  app.use(cors(createCorsOptions()));
   app.use(express.json());
   app.use(requestLogger);
 

@@ -3,6 +3,18 @@
 
   var scrollRevealSelector = ".scroll-reveal";
   var mvpFormSelector = "[data-mvp-form]";
+  var apiRegistrationPath = "/api/mvp-registrations";
+
+  function getApiBaseUrl() {
+    var config = window.EFL_CONFIG || {};
+    var apiBaseUrl = (config.API_BASE_URL || "").trim();
+
+    return apiBaseUrl.replace(/\/+$/, "");
+  }
+
+  function buildApiUrl(path) {
+    return getApiBaseUrl() + path;
+  }
 
   function setFormFeedback(feedbackElement, type, message) {
     if (!feedbackElement) {
@@ -347,7 +359,7 @@
           submitButton.textContent = "Đang gửi...";
         }
 
-        fetch("/api/mvp-registrations", {
+        fetch(buildApiUrl(apiRegistrationPath), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
