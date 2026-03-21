@@ -54,8 +54,8 @@ Từ `src/pages/index.html`:
 <link href="../styles/site-theme.css" rel="stylesheet">
 <link href="../styles/components/product-architecture-section.css" rel="stylesheet">
 <script src="../scripts/site-interactions.js"></script>
-<img src="../assets/images/logo.png" alt="">
-<img src="../assets/icons/hands.png" alt="">
+<img src="../assets/images/logo-main.png" alt="">
+<img src="../assets/icons/icon-life-score.png" alt="">
 ```
 
 ## Đổi tên chính
