@@ -1,0 +1,249 @@
+/* Easy-for-Life — Kiến trúc sản phẩm (epic-cards + product-architecture-section) */
+
+.product-architecture-section {
+  padding-top: 80px;
+  padding-bottom: 80px;
+  background: #f8fafc;
+}
+
+.product-architecture-section__inner {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(16px, 4vw, 24px);
+  padding-right: clamp(16px, 4vw, 24px);
+}
+
+.product-architecture-section__header {
+  text-align: center;
+  margin-bottom: clamp(32px, 5vw, 40px);
+}
+
+.product-architecture-section__title {
+  font-size: clamp(28px, 2.5vw + 1rem, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--secondary-color, #212529);
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.product-architecture-section__intro {
+  font-size: 16px;
+  line-height: 1.55;
+  color: #555;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* Epic cards grid */
+.epic-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(24px, 3vw, 32px);
+  align-items: stretch;
+}
+
+@media screen and (min-width: 768px) {
+  .epic-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .epic-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.epic-cards__item {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.epic-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 100%;
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.epic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.epic-card__media {
+  position: relative;
+  width: 100%;
+  height: clamp(180px, 28vw, 200px);
+  max-height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+  background: #e8eef3;
+}
+
+.epic-card__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  transition: transform 0.35s ease;
+}
+
+.epic-card:hover .epic-card__img {
+  transform: scale(1.03);
+}
+
+.epic-card__media--missing .epic-card__img {
+  display: none;
+}
+
+.epic-card__media--missing::after {
+  content: "Không tải được ảnh";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #64748b;
+  padding: 12px;
+  text-align: center;
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+}
+
+.epic-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.epic-card__title {
+  font-size: clamp(17px, 1.2vw + 0.85rem, 20px);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #0f766e;
+  margin: 0 0 8px;
+}
+
+.epic-card__text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.epic-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.epic-card__badge {
+  display: inline-block;
+  background: #e6fffa;
+  color: #0f766e;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+.epic-card__actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-architecture-section .site-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-architecture-section .site-button:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.product-architecture-section .site-button--primary {
+  background: linear-gradient(to right, #0ea5a4, #22c55e);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(14, 165, 164, 0.35);
+}
+
+.product-architecture-section .site-button--primary:hover {
+  color: #fff;
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(14, 165, 164, 0.4);
+}
+
+.product-architecture-section .site-button--secondary {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.product-architecture-section .site-button--secondary:hover {
+  color: #334155;
+  background: #e2e8f0;
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.epic-cards > .epic-cards__item.scroll-reveal:nth-child(1) {
+  transition-delay: 0.04s;
+}
+
+.epic-cards > .epic-cards__item.scroll-reveal:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.epic-cards > .epic-cards__item.scroll-reveal:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
