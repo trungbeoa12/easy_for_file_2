@@ -5,6 +5,7 @@
   var mvpFormSelector = "[data-mvp-form]";
   var apiRegistrationPath = "/api/mvp-registrations";
   var latestAssessmentStorageKey = "eflLatestAssessment";
+  var latestAssessmentFromAccountKey = "eflLatestAssessmentFromAccount";
 
   function getApiBaseUrl() {
     var config = window.EFL_CONFIG || {};
@@ -20,6 +21,7 @@
   function saveLatestAssessment(record) {
     try {
       window.localStorage.setItem(latestAssessmentStorageKey, JSON.stringify(record));
+      window.localStorage.removeItem(latestAssessmentFromAccountKey);
     } catch (error) {
       // Ignore storage errors so the submit flow still succeeds.
     }

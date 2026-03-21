@@ -2,6 +2,7 @@
   "use strict";
 
   var STORAGE_KEY = "eflLatestAssessment";
+  var STORAGE_FROM_ACCOUNT_KEY = "eflLatestAssessmentFromAccount";
 
   function getApiBaseUrl() {
     var config = window.EFL_CONFIG || {};
@@ -695,7 +696,7 @@
         .then(function (payload) {
           var record = payload && payload.data ? payload.data : null;
           if (record) {
-            saveLatestAssessment(record);
+            saveLatestAssessment(record, { fromAccount: true });
             showContent(record, "account");
             return;
           }
@@ -725,6 +726,11 @@
 
     var record = getStoredAssessment();
     if (!record) {
+      showEmpty("guest-empty");
+      return;
+    }
+
+    if (isStoredAssessmentFromAccount()) {
       showEmpty("guest-empty");
       return;
     }

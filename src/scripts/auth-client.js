@@ -3,6 +3,8 @@
 
   var TOKEN_KEY = "eflAuthToken";
   var USER_KEY = "eflAuthUserJson";
+  var ASSESSMENT_STORAGE_KEY = "eflLatestAssessment";
+  var ASSESSMENT_FROM_ACCOUNT_KEY = "eflLatestAssessmentFromAccount";
 
   function getApiBaseUrl() {
     var config = window.EFL_CONFIG || {};
@@ -62,6 +64,10 @@
     try {
       window.localStorage.removeItem(TOKEN_KEY);
       window.localStorage.removeItem(USER_KEY);
+      if (window.localStorage.getItem(ASSESSMENT_FROM_ACCOUNT_KEY) === "1") {
+        window.localStorage.removeItem(ASSESSMENT_STORAGE_KEY);
+        window.localStorage.removeItem(ASSESSMENT_FROM_ACCOUNT_KEY);
+      }
     } catch (e) {
       /* ignore */
     }
