@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="description" content="MVP Phase 1 Easy-for-Life: form thu thập, BMI, TDEE và lộ trình mở rộng dashboard.">
+        <meta name="author" content="Easy-for-Life">
+
+        <title>Easy-for-Life — MVP Phase 1: form, BMI &amp; TDEE</title>
+
+        <!-- CSS FILES -->        
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <link href="css/bootstrap-icons.css" rel="stylesheet">
+
+        <link href="css/templatemo-kind-heart-charity.css" rel="stylesheet">
+<!--
+
+TemplateMo 581 Kind Heart Charity
+
+https://templatemo.com/tm-581-kind-heart-charity
+
+-->
+    </head>
+    
+    <body>
+
+        <header class="site-header">
+            <div class="container">
+                <div class="row">
+                    
+                    <div class="col-lg-8 col-12 d-flex flex-wrap">
+                        <p class="d-flex me-4 mb-0">
+                            <i class="bi-rocket-takeoff me-2"></i>
+                            MVP đang mở đăng ký sớm · ưu tiên người dùng Việt Nam
+                        </p>
+
+                        <p class="d-flex mb-0">
+                            <i class="bi-envelope me-2"></i>
+
+                            <a href="mailto:hello@easyforlife.app">
+                                hello@easyforlife.app
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-3 col-12 ms-auto d-lg-block d-none">
+                        <ul class="social-icon">
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-twitter"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-facebook"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-instagram"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-youtube"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-whatsapp"></a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <nav class="navbar navbar-expand-lg bg-light shadow-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="images/logo.png" class="logo img-fluid" alt="Easy-for-Life">
+                    <span>
+                        Easy-for-Life
+                        <small>Quality of Life Platform</small>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_1">Trang chủ</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_2">Giới thiệu</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_3">Sản phẩm</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_4">Tham gia MVP</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="news.html" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cập nhật</a>
+
+                            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
+                                <li><a class="dropdown-item" href="news.html">Danh sách bài viết</a></li>
+
+                                <li><a class="dropdown-item active" href="news-detail.html" aria-current="page">Bài viết mẫu</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#section_6">Liên hệ</a>
+                        </li>
+
+                        <li class="nav-item ms-3">
+                            <a class="nav-link custom-btn custom-border-btn btn" href="donate.html">Đăng ký MVP</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+
+            <section class="news-detail-header-section text-center">
+                <div class="section-overlay"></div>
+
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12">
+                            <h1 class="text-white">MVP Phase 1</h1>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="news-section section-padding">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-7 col-12">
+                            <div class="news-block">
+                                <div class="news-block-top">
+                                    <img src="images/news/medium-shot-volunteers-with-clothing-donations.jpg" class="news-image img-fluid" alt="">
+
+                                    <div class="news-category-block">
+                                        <a href="#" class="category-block-link">
+                                            Sản phẩm,
+                                        </a>
+
+                                        <a href="#" class="category-block-link">
+                                            Roadmap
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="news-block-info">
+                                    <div class="d-flex mt-2">
+                                    <div class="news-block-date">
+                                        <p>
+                                            <i class="bi-calendar4 custom-icon me-1"></i>
+                                            15 tháng 3, 2026
+                                        </p>
+                                    </div>
+
+                                    <div class="news-block-author mx-5">
+                                        <p>
+                                            <i class="bi-person custom-icon me-1"></i>
+                                            Đội Easy-for-Life
+                                        </p>
+                                    </div>
+
+                                    <div class="news-block-comment">
+                                        <p>
+                                            <i class="bi-chat-left custom-icon me-1"></i>
+                                            MVP
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="news-block-title mb-2">
+                                    <h4>MVP Phase 1: form thu thập, BMI và TDEE</h4>
+                                </div>
+
+                                    <div class="news-block-body">
+                                        <p><strong>Giai đoạn đầu</strong> tập trung vào việc thu thập đủ ngữ cảnh sống (nhân khẩu, routine, tài chính liên quan ăn uống/sức khỏe, áp lực công việc, mục tiêu cá nhân) và trả về các chỉ số nền: BMI theo chuẩn WHO, calories theo TDEE, cùng khung cho body fat và khối lượng cơ khi có dữ liệu.</p>
+
+                                        <p><strong>Kết quả trung gian</strong> là phân loại trạng thái thiếu / dư / cân bằng trên từng trục (ví dụ năng lượng, vận động, giấc ngủ), trước khi Life Score tổng hợp lên dashboard đầy đủ ở Phase 2.</p>
+
+                                        <blockquote>“Input: trạng thái hiện tại — Output: lộ trình tối ưu.” Đó là insight cốt lõi của Easy-for-Life, tương tự cách bản đồ cần điểm xuất phát và điểm đến.</blockquote>
+                                    </div>
+
+                                    <div class="row mt-5 mb-4">
+                                        <div class="col-lg-6 col-12 mb-4 mb-lg-0">
+                                            <img src="images/news/africa-humanitarian-aid-doctor.jpg" class="news-detail-image img-fluid" alt="">
+                                        </div>
+
+                                        <div class="col-lg-6 col-12">
+                                            <img src="images/news/close-up-happy-people-working-together.jpg" class="news-detail-image img-fluid" alt="">
+                                        </div>
+                                    </div>
+
+                                    <p>Sau MVP, chúng tôi mở rộng <strong>recommendation engine</strong> (rule-based trước, ML sau), <strong>daily plan</strong> gắn với lịch thật của bạn, và <strong>gợi ý hệ sinh thái</strong> như phòng gym, meal plan và ứng dụng sức khỏe bên thứ ba khi có tích hợp.</p>
+
+                                    <div class="social-share border-top mt-5 py-4 d-flex flex-wrap align-items-center">
+                                        <div class="tags-block me-auto">
+                                            <a href="#" class="tags-block-link">
+                                                MVP
+                                            </a>
+
+                                            <a href="#" class="tags-block-link">
+                                                TDEE
+                                            </a>
+
+                                            <a href="#" class="tags-block-link">
+                                                Benchmark
+                                            </a>
+                                        </div>
+
+                                        <div class="d-flex">
+                                            <a href="#" class="social-icon-link bi-facebook"></a>
+
+                                            <a href="#" class="social-icon-link bi-twitter"></a>
+
+                                            <a href="#" class="social-icon-link bi-printer"></a>
+
+                                            <a href="#" class="social-icon-link bi-envelope"></a>
+                                        </div>
+                                    </div>
+
+                                    <div class="author-comment d-flex mt-3 mb-4">
+                                        <img src="images/avatar/studio-portrait-emotional-happy-funny.jpg" class="img-fluid avatar-image" alt="">
+
+                                        <div class="author-comment-info ms-3">
+                                            <h6 class="mb-1">Tuấn</h6>
+
+                                            <p class="mb-0">Mong form có bước riêng cho giờ làm việc từ xa — dễ lệch routine so với văn phòng cố định.</p>
+
+                                            <div class="d-flex mt-2">
+                                                <a href="#" class="author-comment-link me-3">Like</a>
+
+                                                <a href="#" class="author-comment-link">Reply</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="author-comment d-flex ms-5 ps-3">
+                                        <img src="images/avatar/pretty-blonde-woman-wearing-white-t-shirt.jpg" class="img-fluid avatar-image" alt="">
+
+                                        <div class="author-comment-info ms-3">
+                                            <h6 class="mb-1">Mai</h6>
+
+                                            <p class="mb-0">Nếu có bệnh nền, hy vọng app luôn nhắc tham khảo bác sĩ — phần gợi ý dinh dưỡng/vận động nên có disclaimer rõ.</p>
+
+                                            <div class="d-flex mt-2">
+                                                <a href="#" class="author-comment-link me-3">Like</a>
+
+                                                <a href="#" class="author-comment-link">Reply</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="author-comment d-flex mt-3 mb-4">
+                                        <img src="images/avatar/portrait-young-redhead-bearded-male.jpg" class="img-fluid avatar-image" alt="">
+
+                                        <div class="author-comment-info ms-3">
+                                            <h6 class="mb-1">Đức</h6>
+
+                                            <p class="mb-0">Life Score 0–100 dễ hiểu hơn nếu giải thích từng thành phần đóng góp bao nhiêu %.</p>
+
+                                            <div class="d-flex mt-2">
+                                                <a href="#" class="author-comment-link me-3">Like</a>
+
+                                                <a href="#" class="author-comment-link">Reply</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form class="custom-form comment-form mt-4" action="#" method="post" role="form">
+                                        <h6 class="mb-3">Góp ý cho đội sản phẩm</h6>
+
+                                        <textarea name="comment-message" rows="4" class="form-control" id="comment-message" placeholder="Ý tưởng tính năng hoặc phản hồi về MVP"></textarea>
+
+                                        <div class="col-lg-3 col-md-4 col-6 ms-auto">
+                                            <button type="submit" class="form-control">Gửi</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-12 mx-auto mt-4 mt-lg-0">
+                            <form class="custom-form search-form" action="#" method="post" role="form">
+                                <input class="form-control" type="search" placeholder="Tìm bài viết" aria-label="Tìm bài viết">
+
+                                <button type="submit" class="form-control">
+                                    <i class="bi-search"></i>
+                                </button>
+                            </form>
+
+                            <h5 class="mt-5 mb-3">Bài gần đây</h5>
+
+                            <div class="news-block news-block-two-col d-flex mt-4">
+                                <div class="news-block-two-col-image-wrap">
+                                    <a href="news-detail.html">
+                                        <img src="images/news/africa-humanitarian-aid-doctor.jpg" class="news-image img-fluid" alt="">
+                                    </a>
+                                </div>
+
+                                <div class="news-block-two-col-info">
+                                    <div class="news-block-title mb-2">
+                                        <h6><a href="news-detail.html" class="news-block-title-link">Daily plan: từ lịch mẫu đến cá nhân hóa</a></h6>
+                                    </div>
+
+                                    <div class="news-block-date">
+                                        <p>
+                                            <i class="bi-calendar4 custom-icon me-1"></i>
+                                            1 tháng 3, 2026
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="news-block news-block-two-col d-flex mt-4">
+                                <div class="news-block-two-col-image-wrap">
+                                    <a href="news-detail.html">
+                                        <img src="images/news/close-up-happy-people-working-together.jpg" class="news-image img-fluid" alt="">
+                                    </a>
+                                </div>
+
+                                <div class="news-block-two-col-info">
+                                    <div class="news-block-title mb-2">
+                                        <h6><a href="news-detail.html" class="news-block-title-link">Tài chính &amp; ăn uống trong Life Score</a></h6>
+                                    </div>
+
+                                    <div class="news-block-date">
+                                        <p>
+                                            <i class="bi-calendar4 custom-icon me-1"></i>
+                                            22 tháng 2, 2026
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="category-block d-flex flex-column">
+                                <h5 class="mb-3">Chủ đề</h5>
+
+                                <a href="#" class="category-block-link">
+                                    Dinh dưỡng &amp; TDEE
+                                    <span class="badge">12</span>
+                                </a>
+
+                                <a href="#" class="category-block-link">
+                                    Vận động &amp; recovery
+                                    <span class="badge">9</span>
+                                </a>
+
+                                <a href="#" class="category-block-link">
+                                    Giấc ngủ &amp; thời gian
+                                    <span class="badge">8</span>
+                                </a>
+
+                                <a href="#" class="category-block-link">
+                                    Work–life &amp; tinh thần
+                                    <span class="badge">7</span>
+                                </a>
+
+                                <a href="#" class="category-block-link">
+                                    Sản phẩm &amp; roadmap
+                                    <span class="badge">15</span>
+                                </a>
+                            </div>
+
+                            <div class="tags-block">
+                                <h5 class="mb-3">Thẻ</h5>
+
+                                <a href="#" class="tags-block-link">
+                                    Life Score
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    BMI
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    TDEE
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    MVP
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    Dashboard
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    Benchmark
+                                </a>
+
+                                <a href="#" class="tags-block-link">
+                                    Daily plan
+                                </a>
+                            </div>
+
+                            <form class="custom-form subscribe-form" action="#" method="post" role="form">
+                                <h5 class="mb-4">Nhận bản tin MVP</h5>
+
+                                <input type="email" name="subscribe-email" id="subscribe-email" pattern="[^ @]*@[^ @]*" class="form-control" placeholder="Địa chỉ email" required>
+
+                                <div class="col-lg-12 col-12">
+                                    <button type="submit" class="form-control">Đăng ký</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="news-section section-padding section-bg">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12 mb-4">
+                            <h2>Bài liên quan</h2>
+                        </div>
+
+                        <div class="col-lg-6 col-12">
+                            <div class="news-block">
+                                <div class="news-block-top">
+                                    <a href="news-detail.html">
+                                        <img src="images/news/medium-shot-volunteers-with-clothing-donations.jpg" class="news-image img-fluid" alt="">
+                                    </a>
+
+                                    <div class="news-category-block">
+                                        <a href="#" class="category-block-link">
+                                            Chuẩn dữ liệu,
+                                        </a>
+
+                                        <a href="#" class="category-block-link">
+                                            WHO
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="news-block-info">
+                                    <div class="d-flex mt-2">
+                                        <div class="news-block-date">
+                                            <p>
+                                                <i class="bi-calendar4 custom-icon me-1"></i>
+                                                8 tháng 3, 2026
+                                            </p>
+                                        </div>
+
+                                        <div class="news-block-author mx-5">
+                                            <p>
+                                                <i class="bi-person custom-icon me-1"></i>
+                                                Đội Easy-for-Life
+                                            </p>
+                                        </div>
+
+                                        <div class="news-block-comment">
+                                            <p>
+                                                <i class="bi-chat-left custom-icon me-1"></i>
+                                                Framework
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="news-block-title mb-2">
+                                        <h4><a href="news-detail.html" class="news-block-title-link">Xây bộ khung chuẩn: BMI, body fat, giấc ngủ, vận động</a></h4>
+                                    </div>
+
+                                    <div class="news-block-body">
+                                        <p>Nền tảng benchmark giúp Life Score không chỉ là một con số mà phản ánh đúng các trục sức khỏe đã thống nhất trong kế hoạch.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-12">
+                            <div class="news-block">
+                                <div class="news-block-top">
+                                    <a href="news.html">
+                                        <img src="images/news/medium-shot-people-collecting-foodstuff.jpg" class="news-image img-fluid" alt="">
+                                    </a>
+
+                                    <div class="news-category-block">
+                                        <a href="#" class="category-block-link">
+                                            Phase 2,
+                                        </a>
+
+                                        <a href="#" class="category-block-link">
+                                            Daily plan,
+                                        </a>
+
+                                        <a href="#" class="category-block-link">
+                                            Dashboard
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="news-block-info">
+                                    <div class="d-flex mt-2">
+                                        <div class="news-block-date">
+                                            <p>
+                                                <i class="bi-calendar4 custom-icon me-1"></i>
+                                                1 tháng 3, 2026
+                                            </p>
+                                        </div>
+
+                                        <div class="news-block-author mx-5">
+                                            <p>
+                                                <i class="bi-person custom-icon me-1"></i>
+                                                Đội Easy-for-Life
+                                            </p>
+                                        </div>
+
+                                        <div class="news-block-comment">
+                                            <p>
+                                                <i class="bi-chat-left custom-icon me-1"></i>
+                                                Roadmap
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="news-block-title mb-2">
+                                        <h4><a href="news.html" class="news-block-title-link">Daily plan: từ lịch mẫu đến cá nhân hóa</a></h4>
+                                    </div>
+
+                                    <div class="news-block-body">
+                                        <p>Lộ trình hàng ngày kết nối giờ thức, tập, làm việc, bữa ăn và thời gian cho gia đình — sẽ tinh chỉnh theo phản hồi MVP.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-12 mb-4">
+                        <img src="images/logo.png" class="logo img-fluid" alt="">
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-12 mb-4">
+                        <h5 class="site-footer-title mb-3">Liên kết nhanh</h5>
+
+                        <ul class="footer-menu">
+                            <li class="footer-menu-item"><a href="index.html#section_2" class="footer-menu-link">Tầm nhìn</a></li>
+
+                            <li class="footer-menu-item"><a href="news.html" class="footer-menu-link">Cập nhật</a></li>
+
+                            <li class="footer-menu-item"><a href="index.html#section_3" class="footer-menu-link">Kiến trúc sản phẩm</a></li>
+
+                            <li class="footer-menu-item"><a href="index.html#section_4" class="footer-menu-link">Tham gia MVP</a></li>
+
+                            <li class="footer-menu-item"><a href="index.html#section_6" class="footer-menu-link">Liên hệ</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-12 mx-auto">
+                        <h5 class="site-footer-title mb-3">Thông tin liên hệ</h5>
+
+                        <p class="text-white d-flex mb-2">
+                            <i class="bi-telephone me-2"></i>
+
+                            <a href="tel:+842812345678" class="site-footer-link">
+                                +84 28 1234 5678
+                            </a>
+                        </p>
+
+                        <p class="text-white d-flex">
+                            <i class="bi-envelope me-2"></i>
+
+                            <a href="mailto:hello@easyforlife.app" class="site-footer-link">
+                                hello@easyforlife.app
+                            </a>
+                        </p>
+
+                        <p class="text-white d-flex mt-3">
+                            <i class="bi-geo-alt me-2"></i>
+                            Remote-first · Việt Nam
+                        </p>
+
+                        <a href="mailto:hello@easyforlife.app" class="custom-btn btn mt-3">Gửi email</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-footer-bottom">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-7 col-12">
+                            <p class="copyright-text mb-0">© 2026 <a href="index.html">Easy-for-Life</a>. Giao diện: <a href="https://templatemo.com" target="_blank" rel="noopener">TemplateMo</a> (Kind Heart Charity).</p>
+                        </div>
+                        
+                        <div class="col-lg-6 col-md-5 col-12 d-flex justify-content-center align-items-center mx-auto">
+                            <ul class="social-icon">
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-twitter"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-facebook"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-instagram"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-linkedin"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="https://youtube.com/templatemo" class="social-icon-link bi-youtube"></a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- JAVASCRIPT FILES -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.sticky.js"></script>
+        <script src="js/click-scroll.js"></script>
+        <script src="js/counter.js"></script>
+        <script src="js/custom.js"></script>
+
+    </body>
+</html>
